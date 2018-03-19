@@ -1,0 +1,27 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <!-- Original gradient color palette based on Google's Teal
+        start: 300 tone / center: 500 tone / end: 800 tone-->
+    <!--<gradient
+        android:angle="135"
+        android:centerColor="#009688"
+        android:endColor="#00695C"
+        android:startColor="#4DB6AC"
+        andrscanTypetype="linear" />-->
+    <!-- New gradient color palette based on Google's Purple
+        start: 300 tone / center: 500 tone / end: 800 tone-->
+    <!--<gradient
+        android:angle="135"
+        android:centerColor="#9C27B0"
+        android:endColor="#6A1B9A"
+        android:startColor="#BA68C8"
+        andrscanTypetype="linear" />-->
+
+    <!-- New gradient color palette based on Pesto Green custom colors -->
+    <gradient
+        android:angle="135"
+        android:centerColor="#00AA8D"
+        android:endColor="#008975"
+        android:startColor="#00BF9A"
+        android:type="linear" />
+</shape>
