@@ -82,8 +82,8 @@ class BasicInfoFragment : Fragment() {
     }
 
     companion object {
-        private val ARG_HOSTNAME = "hostname"
-        private val ARG_IP = "ip"
+        private const val ARG_HOSTNAME = "hostname"
+        private const val ARG_IP = "ip"
 
         /**
          * Use this factory method to create a new instance of

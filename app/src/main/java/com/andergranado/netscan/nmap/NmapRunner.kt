@@ -3,6 +3,7 @@ package com.andergranado.netscan.nmap
 import android.app.Activity
 import android.content.Context
 import android.net.ConnectivityManager
+import kotlinx.android.synthetic.main.fragment_scan_direction.view.*
 import java.io.BufferedReader
 import java.io.DataOutputStream
 import java.io.File
@@ -80,12 +81,17 @@ class NmapRunner(val activity: Activity, val context: Context, val scanType: Sca
     }
 
     private fun commandBuilder(hosts: List<String>, outputFile: File): String {
-        // TODO: program it to work with different scan types
+        // TODO: make it work with lambdas or some functional programming in order to make it good for my eyes :)
         var hostsString = ""
         for (host in hosts)
             hostsString += host + " "
-        // TODO: make it work with lambdas or some functional programming in order to make it good for my eyes :)
-        return nmapExec.path + " " + hostsString + " -oX " + outputFile.path + "\n"
+        val args = when (scanType) {
+            ScanType.REGULAR -> ""
+            ScanType.PING -> "-sn"
+            ScanType.QUICK -> "-T4"
+            ScanType.FULL -> "-A --no-stylesheet"
+        }
+        return nmapExec.path + " " + args + " " + hostsString + " -oX " + outputFile.path + "\n"
     }
 
     private fun endProcess() {

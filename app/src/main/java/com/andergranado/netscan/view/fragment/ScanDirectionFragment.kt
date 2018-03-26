@@ -7,9 +7,12 @@ import android.os.AsyncTask
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.app.AlertDialog
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Switch
 import com.andergranado.netscan.R
 import com.andergranado.netscan.nmap.NmapRunner
@@ -29,14 +32,15 @@ import java.util.regex.Pattern
  * Use the [ScanDirectionFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class ScanDirectionFragment : Fragment() {
+class ScanDirectionFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     // TODO: Try to locate regex strings on strings.xml
-    val IPPattern: Pattern = Pattern.compile(
+    private val ipPattern: Pattern = Pattern.compile(
             "^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}\$")
-    val FQDNPattern: Pattern = Pattern.compile(
+    private val fqdnPattern: Pattern = Pattern.compile(
             "(?=^.{4,253}$)(^((?!-)[a-zA-Z0-9-]{1,63}(?<!-)\\.)+[a-zA-Z]{2,63}$)")
 
+    private var scanType = ScanType.REGULAR
 
     private var mListener: OnFragmentInteractionListener? = null
 
@@ -48,6 +52,38 @@ class ScanDirectionFragment : Fragment() {
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         return inflater!!.inflate(R.layout.fragment_scan_direction, container, false)
+    }
+
+    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val adapter = ArrayAdapter.createFromResource(context, R.array.scan_type, android.R.layout.simple_spinner_item)
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        // Apply the adapter to the spinner
+        scan_type_spinner.adapter = adapter
+        scan_type_spinner.onItemSelectedListener = this
+
+        host_to_scan.setOnKeyListener(object : View.OnKeyListener {
+            override fun onKey(v: View, keyCode: Int, event: KeyEvent): Boolean {
+                if (event.action == KeyEvent.ACTION_DOWN) {
+                    when (keyCode) {
+                        KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER -> {
+                            startDirectionScan(v)
+                            return true
+                        }
+                    }
+                }
+                return false
+            }
+        })
+    }
+
+    override fun onNothingSelected(parent: AdapterView<*>?) {
+        scanType = ScanType.REGULAR
+    }
+
+    override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, long: Long) {
+        scanType = ScanType.values()[pos]
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -97,7 +133,7 @@ class ScanDirectionFragment : Fragment() {
 
     fun startDirectionScan(v: View) {
         val hostStr = host_to_scan.text.toString()
-        if (IPPattern.matcher(hostStr).matches() || FQDNPattern.matcher(hostStr).matches()) {
+        if (ipPattern.matcher(hostStr).matches() || fqdnPattern.matcher(hostStr).matches()) {
             if (NmapRunner.isNetworkAvailable(activity))
                 ScanDirectionTask().execute(hostStr)
             else {
@@ -123,17 +159,41 @@ class ScanDirectionFragment : Fragment() {
 
         private var scan: NmapXmlParser.NmapScan? = null
 
+        override fun onPreExecute() {
+            super.onPreExecute()
+            button_scan_host.isEnabled = false
+            host_to_scan.isEnabled = false
+            scan_type_spinner.isEnabled = false
+            progress_bar.visibility = View.VISIBLE
+        }
+
         override fun doInBackground(vararg hosts: String) {
-            val nmapRunner = NmapRunner(activity, context, ScanType.REGULAR)
+            val nmapRunner = NmapRunner(activity, context, scanType)
             scan = nmapRunner.runScan(hosts.asList())
 
             if (!isCancelled) nmapRunner.scanProcess?.waitFor()
         }
 
         override fun onPostExecute(result: Unit?) {
-            val intent = Intent(activity, DirectionScanActivity::class.java)
-            intent.putExtra("scan", scan as Serializable)
-            startActivity(intent)
+            val scan = scan
+            if (scan != null) {
+                if (!scan.hosts.isEmpty()) {
+                    val intent = Intent(activity, DirectionScanActivity::class.java)
+                    intent.putExtra("scan", scan as Serializable)
+                    startActivity(intent)
+                } else {
+                    AlertDialog.Builder(activity)
+                            .setIcon(R.drawable.ic_warning)
+                            .setTitle(R.string.error)
+                            .setMessage("No host at that giver domain or IP") // TODO: Move string to resources
+                            .setPositiveButton(R.string.ok, null)
+                            .show()
+                }
+            }
+            button_scan_host.isEnabled = true
+            host_to_scan.isEnabled = true
+            scan_type_spinner.isEnabled = true
+            progress_bar.visibility = View.GONE
         }
     }
 

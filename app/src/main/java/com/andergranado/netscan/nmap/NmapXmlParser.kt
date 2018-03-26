@@ -245,7 +245,10 @@ class NmapXmlParser(val scanType: ScanType = ScanType.REGULAR) {
     private fun readService(parser: XmlPullParser): String {
         parser.require(XmlPullParser.START_TAG, namespace, "service")
         val serviceName = parser.getAttributeValue(null, "name")
-        parser.next()
+
+        while (parser.next() != XmlPullParser.END_TAG && parser.name != "service") {
+            skip(parser)
+        }
 
         return serviceName
     }

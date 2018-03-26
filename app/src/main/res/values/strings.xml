@@ -39,6 +39,13 @@
 
     <string name="scanning">Scanning&#8230;</string>
 
+    <!-- If the order changes the ScanType enum needs to be changed -->
+    <string-array name="scan_type">
+        <item>Regular</item>
+        <item>Ping</item>
+        <item>Quick</item>
+        <item>Full</item>
+    </string-array>
 
     <!-- Strings related to Settings -->
 
