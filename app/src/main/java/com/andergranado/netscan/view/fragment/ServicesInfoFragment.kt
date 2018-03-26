@@ -1,58 +1,53 @@
 package com.andergranado.netscan.view.fragment
 
 import android.content.Context
-import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-
 import com.andergranado.netscan.R
+import com.andergranado.netscan.controller.MyServicesInfoRecyclerViewAdapter
+import com.andergranado.netscan.nmap.NmapXmlParser
 
 /**
- * A simple [Fragment] subclass.
- * Activities that contain this fragment must implement the
- * [ServicesInfoFragment.OnFragmentInteractionListener] interface
- * to handle interaction events.
- * Use the [ServicesInfoFragment.newInstance] factory method to
- * create an instance of this fragment.
+ * A fragment representing a list of Items.
+ *
+ *
+ * Activities containing this fragment MUST implement the [OnListFragmentInteractionListener]
+ * interface.
+ */
+/**
+ * Mandatory empty constructor for the fragment manager to instantiate the
+ * fragment (e.g. upon screen orientation changes).
  */
 class ServicesInfoFragment : Fragment() {
 
-    // TODO: Rename and change types of parameters
-    private var mParam1: String? = null
-    private var mParam2: String? = null
-
-    private var mListener: OnFragmentInteractionListener? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        if (arguments != null) {
-            mParam1 = arguments.getString(ARG_PARAM1)
-            mParam2 = arguments.getString(ARG_PARAM2)
-        }
-    }
+    private var mListener: OnListFragmentInteractionListener? = null
+    private var ports: List<NmapXmlParser.Port>? = null
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        // Inflate the layout for this fragment
-        return inflater!!.inflate(R.layout.fragment_services_info, container, false)
+        val view = inflater!!.inflate(R.layout.services_info_list, container, false)
+
+        if (view is RecyclerView) {
+            val context = view.context
+            view.layoutManager = LinearLayoutManager(context)
+            if (ports != null)
+                view.adapter = MyServicesInfoRecyclerViewAdapter(ports as List<NmapXmlParser.Port>, mListener)
+        }
+        return view
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    fun onButtonPressed(uri: Uri) {
-        if (mListener != null) {
-            mListener!!.onFragmentInteraction(uri)
-        }
-    }
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
-        if (context is OnFragmentInteractionListener) {
+        if (context is OnListFragmentInteractionListener) {
             mListener = context
         } else {
-            throw RuntimeException(context!!.toString() + " must implement OnFragmentInteractionListener")
+            throw RuntimeException(context!!.toString() + " must implement OnListFragmentInteractionListener")
         }
     }
 
@@ -70,32 +65,15 @@ class ServicesInfoFragment : Fragment() {
      *
      * See the Android Training lesson [Communicating with Other Fragments](http://developer.android.com/training/basics/fragments/communicating.html) for more information.
      */
-    interface OnFragmentInteractionListener {
-        // TODO: Update argument scanType and name
-        fun onFragmentInteraction(uri: Uri)
+    interface OnListFragmentInteractionListener {
+        fun onListFragmentInteraction(item: NmapXmlParser.Port)
     }
 
     companion object {
-        // TODO: Rename parameter arguments, choose names that match
-        // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-        private val ARG_PARAM1 = "param1"
-        private val ARG_PARAM2 = "param2"
 
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment ServicesInfoFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        fun newInstance(param1: String, param2: String): ServicesInfoFragment {
+        fun newInstance(ports: List<NmapXmlParser.Port>): ServicesInfoFragment {
             val fragment = ServicesInfoFragment()
-            val args = Bundle()
-            args.putString(ARG_PARAM1, param1)
-            args.putString(ARG_PARAM2, param2)
-            fragment.arguments = args
+            fragment.ports = ports
             return fragment
         }
     }

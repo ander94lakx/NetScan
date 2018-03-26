@@ -16,7 +16,7 @@ import kotlinx.android.synthetic.main.activity_direction_scan.*
 
 class DirectionScanActivity : AppCompatActivity(),
         BasicInfoFragment.OnFragmentInteractionListener,
-        ServicesInfoFragment.OnFragmentInteractionListener,
+        ServicesInfoFragment.OnListFragmentInteractionListener,
         ExtraInfoFragment.OnFragmentInteractionListener {
 
     /**
@@ -42,6 +42,8 @@ class DirectionScanActivity : AppCompatActivity(),
         val scan = intent.extras.get("scan") as NmapXmlParser.NmapScan
 
         basicInfoFragment = BasicInfoFragment.newInstance(scan.hosts[0].hostNames[0].name, scan.hosts[0].address.address)
+
+        servicesInfoFragment = ServicesInfoFragment.newInstance(scan.hosts[0].ports)
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
@@ -74,4 +76,6 @@ class DirectionScanActivity : AppCompatActivity(),
     }
 
     override fun onFragmentInteraction(uri: Uri) {}
+
+    override fun onListFragmentInteraction(item: NmapXmlParser.Port) {}
 }
