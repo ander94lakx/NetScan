@@ -14,7 +14,9 @@ import java.text.SimpleDateFormat
  * [RecyclerView.Adapter] that can display a [Scan] and makes a call to the
  * specified [OnListFragmentInteractionListener].
  */
-class MyScanRecyclerViewAdapter(private val mValues: List<Scan>, private val mListener: OnListFragmentInteractionListener?) : RecyclerView.Adapter<MyScanRecyclerViewAdapter.ViewHolder>() {
+class MyScanRecyclerViewAdapter(private val values: List<Scan>,
+                                private val listener: OnListFragmentInteractionListener?)
+    : RecyclerView.Adapter<MyScanRecyclerViewAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -23,30 +25,26 @@ class MyScanRecyclerViewAdapter(private val mValues: List<Scan>, private val mLi
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.item = mValues[position]
+        holder.item = values[position]
 
-        holder.scanNameView.text = mValues[position].name
+        holder.scanNameView.text = values[position].name
 
-        val date = mValues[position].date
+        val date = values[position].date
         val formatter = SimpleDateFormat.getDateTimeInstance()
         holder.scanDateView.text = formatter.format(date)
 
-        holder.mView.setOnClickListener(object : View.OnClickListener {
-            override fun onClick(v: View) {
-                // Notify the active callbacks interface (the activity, if the
-                // fragment is attached to one) that an item has been selected.
-                mListener?.onListFragmentInteraction(holder.item as Scan)
-            }
-        })
+        holder.view.setOnClickListener {
+            listener?.onListFragmentInteraction(holder.item as Scan)
+        }
     }
 
     override fun getItemCount(): Int {
-        return mValues.size
+        return values.size
     }
 
-    inner class ViewHolder(val mView: View) : RecyclerView.ViewHolder(mView) {
-        val scanNameView: TextView = mView.findViewById<View>(R.id.scan_name) as TextView
-        val scanDateView: TextView = mView.findViewById<View>(R.id.scan_time) as TextView
+    inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
+        val scanNameView: TextView = view.findViewById<View>(R.id.scan_name) as TextView
+        val scanDateView: TextView = view.findViewById<View>(R.id.scan_time) as TextView
         var item: Scan? = null
 
         override fun toString(): String {

@@ -4,6 +4,8 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal">
 
+    <!-- TODO: Remake this fragment UI to fit Material Design conventions -->
+
     <TextView
         android:id="@+id/port_id"
         android:layout_width="wrap_content"

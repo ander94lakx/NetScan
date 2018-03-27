@@ -13,40 +13,30 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.Switch
 import com.andergranado.netscan.R
 import com.andergranado.netscan.nmap.NmapRunner
 import com.andergranado.netscan.nmap.NmapXmlParser
 import com.andergranado.netscan.nmap.ScanType
 import com.andergranado.netscan.view.activity.DirectionScanActivity
+import com.andergranado.netscan.view.fragment.ScanDirectionFragment.OnFragmentInteractionListener
 import kotlinx.android.synthetic.main.fragment_scan_direction.*
 import java.io.Serializable
 import java.util.regex.Pattern
 
-
 /**
- * A simple [Fragment] subclass.
- * Activities that contain this fragment must implement the
- * [ScanDirectionFragment.OnFragmentInteractionListener] interface
- * to handle interaction events.
- * Use the [ScanDirectionFragment.newInstance] factory method to
- * create an instance of this fragment.
+ * A fragment for make a single host scan.
+ *
+ * Activities containing this fragment must implement the [OnFragmentInteractionListener]
+ * interface.
  */
 class ScanDirectionFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
-    // TODO: Try to locate regex strings on strings.xml
     private val ipPattern: Pattern = Pattern.compile(
             "^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}\$")
     private val fqdnPattern: Pattern = Pattern.compile(
             "(?=^.{4,253}$)(^((?!-)[a-zA-Z0-9-]{1,63}(?<!-)\\.)+[a-zA-Z]{2,63}$)")
-
     private var scanType = ScanType.REGULAR
-
-    private var mListener: OnFragmentInteractionListener? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
+    private var listener: OnFragmentInteractionListener? = null
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -63,19 +53,17 @@ class ScanDirectionFragment : Fragment(), AdapterView.OnItemSelectedListener {
         scan_type_spinner.adapter = adapter
         scan_type_spinner.onItemSelectedListener = this
 
-        host_to_scan.setOnKeyListener(object : View.OnKeyListener {
-            override fun onKey(v: View, keyCode: Int, event: KeyEvent): Boolean {
-                if (event.action == KeyEvent.ACTION_DOWN) {
-                    when (keyCode) {
-                        KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER -> {
-                            startDirectionScan(v)
-                            return true
-                        }
+        host_to_scan.setOnKeyListener { _: View, keyCode: Int, event: KeyEvent ->
+            if (event.action == KeyEvent.ACTION_DOWN) {
+                when (keyCode) {
+                    KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER -> {
+                        startDirectionScan()
+                        true
                     }
+                    else -> false
                 }
-                return false
-            }
-        })
+            } else false
+        }
     }
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -86,41 +74,10 @@ class ScanDirectionFragment : Fragment(), AdapterView.OnItemSelectedListener {
         scanType = ScanType.values()[pos]
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    fun onButtonPressed(uri: Uri) {
-        if (mListener != null) {
-            mListener!!.onFragmentInteraction(uri)
-        }
-    }
-
-    /**
-     * onClick handler of Ping Only switch, who changes other switches to disable more features on
-     * the scan and re-enables clickable property when Ping Only isn't checked
-     */
-    fun onOnlyPingSwitchTouched(v: View) {
-        // Kotlin synthetic imports seems that don't work here :|
-        val onlyPingSwitch = activity.findViewById<Switch>(R.id.switch_only_ping)
-        val scanServicesSwitch = activity.findViewById<Switch>(R.id.switch_scan_services)
-        val additionalInfoSwitch = activity.findViewById<Switch>(R.id.switch_get_host_extra_info)
-
-        if (onlyPingSwitch != null && scanServicesSwitch != null && additionalInfoSwitch != null) {
-            if (onlyPingSwitch.isChecked) {
-                scanServicesSwitch.isClickable = false
-                scanServicesSwitch.isChecked = false
-                additionalInfoSwitch.isClickable = false
-                additionalInfoSwitch.isChecked = false
-
-            } else {
-                scanServicesSwitch.isClickable = true
-                additionalInfoSwitch.isClickable = true
-            }
-        }
-    }
-
     override fun onAttach(context: Context?) {
         super.onAttach(context)
         if (context is OnFragmentInteractionListener) {
-            mListener = context
+            listener = context
         } else {
             throw RuntimeException(context!!.toString() + " must implement OnFragmentInteractionListener")
         }
@@ -128,10 +85,10 @@ class ScanDirectionFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     override fun onDetach() {
         super.onDetach()
-        mListener = null
+        listener = null
     }
 
-    fun startDirectionScan(v: View) {
+    fun startDirectionScan() {
         val hostStr = host_to_scan.text.toString()
         if (ipPattern.matcher(hostStr).matches() || fqdnPattern.matcher(hostStr).matches()) {
             if (NmapRunner.isNetworkAvailable(activity))
@@ -153,6 +110,10 @@ class ScanDirectionFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     .show()
             host_to_scan.text.clear()
         }
+    }
+
+    interface OnFragmentInteractionListener {
+        fun onFragmentInteraction(uri: Uri)
     }
 
     private inner class ScanDirectionTask : AsyncTask<String, Unit, Unit>() {
@@ -185,7 +146,7 @@ class ScanDirectionFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     AlertDialog.Builder(activity)
                             .setIcon(R.drawable.ic_warning)
                             .setTitle(R.string.error)
-                            .setMessage("No host at that giver domain or IP") // TODO: Move string to resources
+                            .setMessage(R.string.no_host_at)
                             .setPositiveButton(R.string.ok, null)
                             .show()
                 }
@@ -195,18 +156,5 @@ class ScanDirectionFragment : Fragment(), AdapterView.OnItemSelectedListener {
             scan_type_spinner.isEnabled = true
             progress_bar.visibility = View.GONE
         }
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     *
-     *
-     * See the Android Training lesson [Communicating with Other Fragments](http://developer.android.com/training/basics/fragments/communicating.html) for more information.
-     */
-    interface OnFragmentInteractionListener {
-        fun onFragmentInteraction(uri: Uri)
     }
 }

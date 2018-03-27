@@ -66,6 +66,4 @@
             android:onClick="startDirectionScan"
             android:text="@string/scan" />
     </LinearLayout>
-
-    <!--<include layout="@layout/scan_options" />-->
 </LinearLayout>

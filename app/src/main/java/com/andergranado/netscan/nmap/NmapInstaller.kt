@@ -9,11 +9,12 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
 /**
- * A class to help with the extraction and installation of Nmap binaries in the device
+ * A class to extract and install Nmap binaries in the device.
  */
 class NmapInstaller(val activity: Activity, val context: Context) {
 
     val nmapPath: String = context.filesDir.path
+
     private val filePrefix: String = "nmap-7.31-android-"
     private val fileSuffix: String = "-bin.zip"
     private val nmapBinPath = nmapPath + "/nmap/bin/nmap"
@@ -38,7 +39,6 @@ class NmapInstaller(val activity: Activity, val context: Context) {
 
                     } else {
                         val buffer = ByteArray(2048)
-
                         val outStream = FileOutputStream(nmapPath + "/" + entry.name)
                         val bufferOut = BufferedOutputStream(outStream, buffer.size)
 
@@ -52,13 +52,11 @@ class NmapInstaller(val activity: Activity, val context: Context) {
                         bufferOut.close()
                     }
                     entry = zin.nextEntry
-
-                } while (entry != null) // TODO: figure out why Kotlin thinks this condition is always true
+                } while (entry != null)
             } catch (e: Exception) {
                 Log.e("Nmap unzipping...", e.message)
             }
             zin.close()
-
             nseDbUpdate()
         }
 
@@ -72,7 +70,7 @@ class NmapInstaller(val activity: Activity, val context: Context) {
         return File(nmapBinPath).exists()
     }
 
-    fun nseDbUpdate() {
+    private fun nseDbUpdate() {
         val processBuilder = ProcessBuilder("sh")
         processBuilder.redirectErrorStream(true)
         val scanProcess: Process = processBuilder.start()

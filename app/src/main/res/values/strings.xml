@@ -39,6 +39,14 @@
 
     <string name="scanning">Scanning&#8230;</string>
 
+    <string name="host">Host</string>
+    <string name="no_host_at">"No host at that giver domain or IP"</string>
+
+    <string name="hosts_scanned">Hosts scanned</string>
+    <string name="hosts_up">Hosts Up</string>
+    <string name="hosts_down">Hosts Down</string>
+    <string name="total_time">Total Time</string>
+
     <!-- If the order changes the ScanType enum needs to be changed -->
     <string-array name="scan_type">
         <item>Regular</item>
@@ -118,5 +126,7 @@
     <string name="pref_ringtone_silent">Silent</string>
 
     <string name="pref_title_vibrate">Vibrate</string>
+    <string name="ip_address">IP address</string>
+    <string name="hostname">Hostname</string>
 
 </resources>

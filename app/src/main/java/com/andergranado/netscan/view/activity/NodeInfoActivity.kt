@@ -4,6 +4,9 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import com.andergranado.netscan.R
 
+/**
+ * An activity that shows info from a concrete node.
+ */
 class NodeInfoActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {

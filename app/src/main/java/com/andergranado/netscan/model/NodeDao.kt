@@ -2,14 +2,16 @@ package com.andergranado.netscan.model
 
 import android.arch.persistence.room.*
 
-
-// TODO: Fix the parameter default name use whe Room Library fixes it
+/**
+ * DAO interface with all the DB management for a [Node].
+ */
 @Dao
 interface NodeDao {
 
     @get:Query("SELECT * FROM node")
     val all: List<Node>
 
+    // TODO: Fix the parameter default name use whe Room Library fixes it
     @Query("SELECT * FROM node WHERE id = :arg0")
     fun getNode(id: Int): Node
 

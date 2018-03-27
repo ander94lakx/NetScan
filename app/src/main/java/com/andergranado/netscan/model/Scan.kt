@@ -4,9 +4,8 @@ import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey
 import java.util.*
 
-
 /**
- * A dummy item representing a piece of name.
+ * A single node in a network scan.
  */
 @Entity
 class Scan() {

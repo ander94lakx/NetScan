@@ -13,7 +13,9 @@ import com.andergranado.netscan.view.fragment.ServicesInfoFragment.OnListFragmen
  * [RecyclerView.Adapter] that can display a [Port] and makes a call to the
  * specified [OnListFragmentInteractionListener].
  */
-class MyServicesInfoRecyclerViewAdapter(private val mValues: List<Port>, private val mListener: OnListFragmentInteractionListener?) : RecyclerView.Adapter<MyServicesInfoRecyclerViewAdapter.ViewHolder>() {
+class MyServicesInfoRecyclerViewAdapter(private val values: List<Port>,
+                                        private val listener: OnListFragmentInteractionListener?)
+    : RecyclerView.Adapter<MyServicesInfoRecyclerViewAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -22,26 +24,26 @@ class MyServicesInfoRecyclerViewAdapter(private val mValues: List<Port>, private
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.item = mValues[position]
-        holder.portIdView.text = mValues[position].id.toString()
-        holder.portTypeView.text = mValues[position].type
-        holder.portNameView.text = mValues[position].service
-        holder.portStateView.text = mValues[position].state.state
+        holder.item = values[position]
+        holder.portIdView.text = values[position].id.toString()
+        holder.portTypeView.text = values[position].type
+        holder.portNameView.text = values[position].service
+        holder.portStateView.text = values[position].state.state
 
-        holder.mView.setOnClickListener {
-            mListener?.onListFragmentInteraction(holder.item as Port)
+        holder.view.setOnClickListener {
+            listener?.onListFragmentInteraction(holder.item as Port)
         }
     }
 
     override fun getItemCount(): Int {
-        return mValues.size
+        return values.size
     }
 
-    inner class ViewHolder(val mView: View) : RecyclerView.ViewHolder(mView) {
-        val portIdView: TextView = mView.findViewById<View>(R.id.port_id) as TextView
-        val portTypeView: TextView = mView.findViewById<View>(R.id.port_type) as TextView
-        val portNameView: TextView = mView.findViewById<View>(R.id.port_name) as TextView
-        val portStateView: TextView = mView.findViewById<View>(R.id.port_state) as TextView
+    inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
+        val portIdView: TextView = view.findViewById<View>(R.id.port_id) as TextView
+        val portTypeView: TextView = view.findViewById<View>(R.id.port_type) as TextView
+        val portNameView: TextView = view.findViewById<View>(R.id.port_name) as TextView
+        val portStateView: TextView = view.findViewById<View>(R.id.port_state) as TextView
         var item: Port? = null
 
         override fun toString(): String {

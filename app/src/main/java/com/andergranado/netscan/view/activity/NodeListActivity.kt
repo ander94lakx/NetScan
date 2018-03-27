@@ -8,9 +8,12 @@ import com.andergranado.netscan.R
 import com.andergranado.netscan.model.Node
 import com.andergranado.netscan.view.fragment.NodeListFragment
 
+/**
+ * An activity that shows a list of [Node] from a concrete scan.
+ */
 class NodeListActivity : AppCompatActivity(), NodeListFragment.OnListFragmentInteractionListener {
 
-    var nodeListFragment: NodeListFragment? = null
+    private var nodeListFragment: NodeListFragment? = null
 
     private var scanId: Int = 0
     private var scanName: String = ""
