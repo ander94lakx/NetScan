@@ -30,8 +30,8 @@ class DirectionScanActivity : AppCompatActivity(),
     private var mSectionsPagerAdapter: SectionsPagerAdapter? = null
 
     var basicInfoFragment: BasicInfoFragment? = null
-    var servicesInfoFragment: ServicesInfoFragment? = ServicesInfoFragment()
-    var extraInfoFragment: ExtraInfoFragment? = ExtraInfoFragment()
+    var servicesInfoFragment: ServicesInfoFragment? = null
+    var extraInfoFragment: ExtraInfoFragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,9 +41,12 @@ class DirectionScanActivity : AppCompatActivity(),
 
         val scan = intent.extras.get("scan") as NmapXmlParser.NmapScan
 
-        basicInfoFragment = BasicInfoFragment.newInstance(scan.hosts[0].hostNames[0].name, scan.hosts[0].address.address)
-
-        servicesInfoFragment = ServicesInfoFragment.newInstance(scan.hosts[0].ports)
+        if (!scan.hosts.isEmpty()) {
+            basicInfoFragment = BasicInfoFragment.newInstance(scan.hosts[0].hostNames[0].name, scan.hosts[0].address.address)
+            servicesInfoFragment = ServicesInfoFragment.newInstance(scan.hosts[0].ports)
+            if (scan.runStats is NmapXmlParser.RunStats)
+                extraInfoFragment = ExtraInfoFragment.newInstance(scan.runStats)
+        }
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
