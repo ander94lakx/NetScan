@@ -53,11 +53,11 @@ class ScanDirectionFragment : Fragment(), AdapterView.OnItemSelectedListener {
         scan_type_spinner.adapter = adapter
         scan_type_spinner.onItemSelectedListener = this
 
-        host_to_scan.setOnKeyListener { _: View, keyCode: Int, event: KeyEvent ->
+        host_to_scan.setOnKeyListener { v: View, keyCode: Int, event: KeyEvent ->
             if (event.action == KeyEvent.ACTION_DOWN) {
                 when (keyCode) {
                     KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER -> {
-                        startDirectionScan()
+                        startDirectionScan(v)
                         true
                     }
                     else -> false
@@ -88,7 +88,8 @@ class ScanDirectionFragment : Fragment(), AdapterView.OnItemSelectedListener {
         listener = null
     }
 
-    fun startDirectionScan() {
+    // It's necessary for Android using view parameter even without using it
+    fun startDirectionScan(v: View) {
         val hostStr = host_to_scan.text.toString()
         if (ipPattern.matcher(hostStr).matches() || fqdnPattern.matcher(hostStr).matches()) {
             if (NmapRunner.isNetworkAvailable(activity))

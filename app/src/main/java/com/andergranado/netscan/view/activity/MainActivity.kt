@@ -9,6 +9,7 @@ import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import com.andergranado.netscan.R
 import com.andergranado.netscan.model.Scan
 import com.andergranado.netscan.view.fragment.AboutFragment
@@ -113,7 +114,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onFragmentInteraction(uri: Uri) {}
 
-    fun startDirectionScan() {
-        scanDirectionFragment.startDirectionScan()
+    // It's necessary for Android using view parameter even without using it
+    fun startDirectionScan(v: View) {
+        scanDirectionFragment.startDirectionScan(v)
     }
 }
