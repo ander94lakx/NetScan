@@ -18,7 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Hosts scanned"
+            android:text="@string/hosts_scanned"
             android:textAppearance="@android:style/TextAppearance.Material.Subhead" />
 
         <TextView
@@ -40,7 +40,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Hosts UP"
+            android:text="@string/hosts_up"
             android:textAppearance="@android:style/TextAppearance.Material.Subhead" />
 
         <TextView
@@ -62,7 +62,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Hosts DOWN"
+            android:text="@string/hosts_down"
             android:textAppearance="@android:style/TextAppearance.Material.Subhead" />
 
         <TextView
@@ -85,7 +85,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Total Time"
+            android:text="@string/total_time"
             android:textAppearance="@android:style/TextAppearance.Material.Subhead" />
 
         <TextView

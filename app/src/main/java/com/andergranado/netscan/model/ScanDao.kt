@@ -2,13 +2,16 @@ package com.andergranado.netscan.model
 
 import android.arch.persistence.room.*
 
-// TODO: Fix the parameter default name use whe Room Library fixes it
+/**
+ * DAO interface with all the DB management for a [Node].
+ */
 @Dao
 interface ScanDao {
 
     @get:Query("SELECT * FROM scan")
     val all: List<Scan>
 
+    // TODO: Fix the parameter default name use whe Room Library fixes it
     @Query("SELECT * FROM scan WHERE id = :arg0")
     fun getScan(id: Int): Scan
 

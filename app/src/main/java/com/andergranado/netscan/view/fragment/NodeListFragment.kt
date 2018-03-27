@@ -16,17 +16,16 @@ import com.andergranado.netscan.view.fragment.NodeListFragment.OnListFragmentInt
 
 
 /**
- * A fragment representing a list of Items.
+ * A fragment representing a list of [Node].
  *
- *
- * Activities containing this fragment MUST implement the [OnListFragmentInteractionListener]
+ * Activities containing this fragment must implement the [OnListFragmentInteractionListener]
  * interface.
  */
 class NodeListFragment : Fragment() {
 
     private var scanId: Int = 0
     private var scanName: String = ""
-    private var mListener: OnListFragmentInteractionListener? = null
+    private var listener: OnListFragmentInteractionListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,19 +38,16 @@ class NodeListFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-
         val view = inflater!!.inflate(R.layout.fragment_node_list, container, false)
 
         // Set the adapter
         if (view is RecyclerView) {
             val context = view.getContext()
-            //view.adapter = MyNodeRecyclerViewAdapter(NodeList.ITEMS, mListener)
-
-            val db: AppDatabase = Room.databaseBuilder(context, AppDatabase::class.java, AppDatabase.DATABASE_NAME).allowMainThreadQueries().fallbackToDestructiveMigration().build()
-
+            val db: AppDatabase = Room.databaseBuilder(context, AppDatabase::class.java, AppDatabase.DATABASE_NAME)
+                    .allowMainThreadQueries().fallbackToDestructiveMigration().build()
             val nodes: List<Node> = db.nodeDao().all
 
-            view.adapter = MyNodeRecyclerViewAdapter(nodes, mListener)
+            view.adapter = MyNodeRecyclerViewAdapter(nodes, listener)
         }
 
         return view
@@ -60,7 +56,7 @@ class NodeListFragment : Fragment() {
     override fun onAttach(context: Context?) {
         super.onAttach(context)
         if (context is OnListFragmentInteractionListener) {
-            mListener = context
+            listener = context
         } else {
             throw RuntimeException(context!!.toString() + " must implement OnListFragmentInteractionListener")
         }
@@ -68,35 +64,18 @@ class NodeListFragment : Fragment() {
 
     override fun onDetach() {
         super.onDetach()
-        mListener = null
+        listener = null
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     *
-     *
-     * See the Android Training lesson [Communicating with Other Fragments](http://developer.android.com/training/basics/fragments/communicating.html) for more information.
-     */
     interface OnListFragmentInteractionListener {
         fun onListFragmentInteraction(item: Node)
     }
 
     companion object {
 
-        private val ARG_SCAN_ID = "scan_id"
-        private val ARG_SCAN_NAME = "scan_name"
+        private const val ARG_SCAN_ID = "scan_id"
+        private const val ARG_SCAN_NAME = "scan_name"
 
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param scanId The ID of the scan whose nodes are going to be displayed
-         * @param scanName The name of the scan whose nodes are going to be displayed
-         * @return A new instance of fragment NodeListFragment
-         */
         fun newInstance(scanId: Int, scanName: String): NodeListFragment {
             val fragment = NodeListFragment()
             val args = Bundle()

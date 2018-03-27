@@ -9,7 +9,6 @@ import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import com.andergranado.netscan.R
 import com.andergranado.netscan.model.Scan
 import com.andergranado.netscan.view.fragment.AboutFragment
@@ -19,7 +18,10 @@ import com.andergranado.netscan.view.fragment.ShareFragment
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 
-
+/**
+ * The MainActivity of the app, that contains a NavigationView and interacts with some other
+ * fragments to show different parts of the UI.
+ */
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
         ShareFragment.OnFragmentInteractionListener,
         ScanListFragment.OnListFragmentInteractionListener,
@@ -68,13 +70,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        when (item.itemId) {
+        return when (item.itemId) {
             R.id.action_settings -> {
                 val intent = Intent(this, SettingsActivity::class.java)
                 startActivity(intent)
-                return true
+                true
             }
-            else -> return super.onOptionsItemSelected(item)
+            else -> super.onOptionsItemSelected(item)
         }
     }
 
@@ -100,8 +102,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
-    override fun onFragmentInteraction(uri: Uri) {}
-
     override fun onListFragmentInteraction(item: Scan) {
         val intent = Intent(this, NodeListActivity::class.java)
         val bundle = Bundle()
@@ -111,11 +111,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         startActivity(intent)
     }
 
-    fun onOnlyPingSwitchTouched(v: View) {
-        scanDirectionFragment.onOnlyPingSwitchTouched(v)
-    }
+    override fun onFragmentInteraction(uri: Uri) {}
 
-    fun startDirectionScan(v: View) {
-        scanDirectionFragment.startDirectionScan(v)
+    fun startDirectionScan() {
+        scanDirectionFragment.startDirectionScan()
     }
 }

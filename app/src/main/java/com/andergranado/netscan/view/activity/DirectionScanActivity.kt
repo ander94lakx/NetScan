@@ -14,6 +14,9 @@ import com.andergranado.netscan.view.fragment.ExtraInfoFragment
 import com.andergranado.netscan.view.fragment.ServicesInfoFragment
 import kotlinx.android.synthetic.main.activity_direction_scan.*
 
+/**
+ * An activity that contains all the info about a completed single host scan.
+ */
 class DirectionScanActivity : AppCompatActivity(),
         BasicInfoFragment.OnFragmentInteractionListener,
         ServicesInfoFragment.OnListFragmentInteractionListener,
@@ -25,9 +28,9 @@ class DirectionScanActivity : AppCompatActivity(),
      * {@link FragmentPagerAdapter} derivative, which will keep every
      * loaded fragment in memory. If this becomes too memory intensive, it
      * may be best to switch to a
-     * [android.support.v4.app.FragmentStatePagerAdapter].
+     * [android.support.v4.app.FragmentStatePagerAdapter]
      */
-    private var mSectionsPagerAdapter: SectionsPagerAdapter? = null
+    private var sectionsPagerAdapter: SectionsPagerAdapter? = null
 
     var basicInfoFragment: BasicInfoFragment? = null
     var servicesInfoFragment: ServicesInfoFragment? = null
@@ -49,25 +52,28 @@ class DirectionScanActivity : AppCompatActivity(),
         }
 
         // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
-        mSectionsPagerAdapter = SectionsPagerAdapter(supportFragmentManager)
+        // primary sections of the activity
+        sectionsPagerAdapter = SectionsPagerAdapter(supportFragmentManager)
 
-        // Set up the ViewPager with the sections adapter.
-        container.adapter = mSectionsPagerAdapter
+        // Set up the ViewPager with the sections adapter
+        container.adapter = sectionsPagerAdapter
 
         container.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabs))
         tabs.addOnTabSelectedListener(TabLayout.ViewPagerOnTabSelectedListener(container))
-
     }
+
+    override fun onFragmentInteraction(uri: Uri) {}
+
+    override fun onListFragmentInteraction(item: NmapXmlParser.Port) {}
 
     /**
      * A [FragmentPagerAdapter] that returns a fragment corresponding to
-     * one of the sections/tabs/pages.
+     * one of the sections/tabs/pages
      */
     inner class SectionsPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
 
         override fun getItem(position: Int): Fragment {
-            // getItem is called to instantiate the fragment for the given page.
+            // getItem is called to instantiate the fragment for the given page
             return when (position % 3 + 1) {
                 2 -> servicesInfoFragment as Fragment
                 3 -> extraInfoFragment as Fragment
@@ -77,8 +83,4 @@ class DirectionScanActivity : AppCompatActivity(),
 
         override fun getCount(): Int = 3
     }
-
-    override fun onFragmentInteraction(uri: Uri) {}
-
-    override fun onListFragmentInteraction(item: NmapXmlParser.Port) {}
 }

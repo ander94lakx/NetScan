@@ -13,7 +13,9 @@ import com.andergranado.netscan.view.fragment.NodeListFragment.OnListFragmentInt
  * [RecyclerView.Adapter] that can display a [Node] and makes a call to the
  * specified [OnListFragmentInteractionListener].
  */
-class MyNodeRecyclerViewAdapter(private val mValues: List<Node>, private val mListener: OnListFragmentInteractionListener?) : RecyclerView.Adapter<MyNodeRecyclerViewAdapter.ViewHolder>() {
+class MyNodeRecyclerViewAdapter(private val values: List<Node>,
+                                private val listener: OnListFragmentInteractionListener?)
+    : RecyclerView.Adapter<MyNodeRecyclerViewAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -22,24 +24,24 @@ class MyNodeRecyclerViewAdapter(private val mValues: List<Node>, private val mLi
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.item = mValues[position]
-        holder.nodeNameView.text = mValues[position].name
-        holder.nodeIpView.text = mValues[position].ip
-        holder.nodeMacView.text = mValues[position].getMacString()
+        holder.item = values[position]
+        holder.nodeNameView.text = values[position].name
+        holder.nodeIpView.text = values[position].ip
+        holder.nodeMacView.text = values[position].getMacString()
 
-        holder.mView.setOnClickListener {
-            mListener?.onListFragmentInteraction(holder.item as Node)
+        holder.view.setOnClickListener {
+            listener?.onListFragmentInteraction(holder.item as Node)
         }
     }
 
     override fun getItemCount(): Int {
-        return mValues.size
+        return values.size
     }
 
-    inner class ViewHolder(val mView: View) : RecyclerView.ViewHolder(mView) {
-        val nodeNameView: TextView = mView.findViewById<View>(R.id.node_name) as TextView
-        val nodeIpView: TextView = mView.findViewById<View>(R.id.node_ip) as TextView
-        val nodeMacView: TextView = mView.findViewById<View>(R.id.node_mac) as TextView
+    inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
+        val nodeNameView: TextView = view.findViewById<View>(R.id.node_name) as TextView
+        val nodeIpView: TextView = view.findViewById<View>(R.id.node_ip) as TextView
+        val nodeMacView: TextView = view.findViewById<View>(R.id.node_mac) as TextView
         var item: Node? = null
     }
 }

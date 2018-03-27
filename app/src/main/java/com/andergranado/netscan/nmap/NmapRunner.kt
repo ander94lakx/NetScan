@@ -3,24 +3,24 @@ package com.andergranado.netscan.nmap
 import android.app.Activity
 import android.content.Context
 import android.net.ConnectivityManager
-import kotlinx.android.synthetic.main.fragment_scan_direction.view.*
 import java.io.BufferedReader
 import java.io.DataOutputStream
 import java.io.File
 import java.io.InputStreamReader
 
-
-class NmapRunner(val activity: Activity, val context: Context, val scanType: ScanType = ScanType.REGULAR) {
-
-    private val installer = NmapInstaller(activity, context)
+/**
+ * A class for running Nmap commands on the device.
+ */
+class NmapRunner(val activity: Activity,
+                 val context: Context,
+                 private val scanType: ScanType = ScanType.REGULAR) {
 
     var scanProcess: Process? = null
 
-    private val parser = NmapXmlParser(scanType)
-
+    private val installer = NmapInstaller(activity, context)
+    private val parser = NmapXmlParser()
     private val nmapOutputDir = installer.nmapPath + "/nmap/output"
     private val nmapExec: File
-
     private var processOutputStream: DataOutputStream? = null
     private var processInputReader: BufferedReader? = null
 
@@ -30,7 +30,6 @@ class NmapRunner(val activity: Activity, val context: Context, val scanType: Sca
 
     fun runScan(hosts: List<String>): NmapXmlParser.NmapScan {
         startProcess()
-
         var outputFile = setupOutputFile()
 
         processOutputStream?.writeBytes(commandBuilder(hosts, outputFile))
@@ -71,7 +70,7 @@ class NmapRunner(val activity: Activity, val context: Context, val scanType: Sca
 
     private fun setupOutputFile(): File {
         val outputDir = File(nmapOutputDir)
-        var outputFile = File(nmapOutputDir + "/scan_direction.xml")
+        val outputFile = File(nmapOutputDir + "/scan_direction.xml")
         if (!outputDir.exists())
             outputDir.mkdirs()
         else if (outputFile.exists())
@@ -81,17 +80,15 @@ class NmapRunner(val activity: Activity, val context: Context, val scanType: Sca
     }
 
     private fun commandBuilder(hosts: List<String>, outputFile: File): String {
-        // TODO: make it work with lambdas or some functional programming in order to make it good for my eyes :)
-        var hostsString = ""
-        for (host in hosts)
-            hostsString += host + " "
+        var hostsString = " "
+        hosts.forEach { hostsString += it + " " }
         val args = when (scanType) {
             ScanType.REGULAR -> ""
             ScanType.PING -> "-sn"
             ScanType.QUICK -> "-T4"
             ScanType.FULL -> "-A --no-stylesheet"
         }
-        return nmapExec.path + " " + args + " " + hostsString + " -oX " + outputFile.path + "\n"
+        return nmapExec.path + " " + args + hostsString + " -oX " + outputFile.path + "\n"
     }
 
     private fun endProcess() {

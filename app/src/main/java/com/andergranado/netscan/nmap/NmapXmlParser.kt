@@ -7,14 +7,16 @@ import java.io.IOException
 import java.io.InputStream
 import java.io.Serializable
 
-
-class NmapXmlParser(val scanType: ScanType = ScanType.REGULAR) {
+/**
+ * A XML parser for Nmap XML command output
+ */
+class NmapXmlParser {
 
     data class NmapScan(val scanInfo: ScanInfo?,
                         val hosts: List<Host>,
                         val runStats: RunStats?) : Serializable
 
-    data class ScanInfo(val numservices: Int,
+    data class ScanInfo(val numServices: Int,
                         val protocol: String,
                         val services: List<Int>) : Serializable
 
@@ -50,14 +52,12 @@ class NmapXmlParser(val scanType: ScanType = ScanType.REGULAR) {
 
     @Throws(XmlPullParserException::class, IOException::class) // For Java interoperability
     fun parse(ins: InputStream): NmapScan {
-        try {
+        ins.use {
             val parser = Xml.newPullParser()
             parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false)
-            parser.setInput(ins, null)
+            parser.setInput(it, null)
             parser.nextTag()
             return readNmapRun(parser)
-        } finally {
-            ins.close()
         }
     }
 
@@ -105,9 +105,7 @@ class NmapXmlParser(val scanType: ScanType = ScanType.REGULAR) {
                 if (range.size == 2 && range[0].toIntOrNull() != null && range[1].toIntOrNull() != null) {
                     val from = range[0].toInt()
                     val to = range[1].toInt()
-                    for (i in from..to) {
-                        servicesList.add(i)
-                    }
+                    servicesList.addAll(from..to)
                 }
             }
         }
@@ -125,8 +123,6 @@ class NmapXmlParser(val scanType: ScanType = ScanType.REGULAR) {
             if (parser.eventType != XmlPullParser.START_TAG)
                 continue
 
-            // TODO: Implement getting trace data
-            // TODO: Implement getting OS data
             when (parser.name) {
                 "status" -> status = readStatus(parser)
                 "address" -> address = readAddress(parser)

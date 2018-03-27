@@ -11,21 +11,17 @@ import android.view.ViewGroup
 import com.andergranado.netscan.R
 import com.andergranado.netscan.controller.MyServicesInfoRecyclerViewAdapter
 import com.andergranado.netscan.nmap.NmapXmlParser
+import com.andergranado.netscan.view.fragment.ServicesInfoFragment.OnListFragmentInteractionListener
 
 /**
- * A fragment representing a list of Items.
- *
+ * A fragment representing a list of opened ports for a single host.
  *
  * Activities containing this fragment MUST implement the [OnListFragmentInteractionListener]
  * interface.
  */
-/**
- * Mandatory empty constructor for the fragment manager to instantiate the
- * fragment (e.g. upon screen orientation changes).
- */
 class ServicesInfoFragment : Fragment() {
 
-    private var mListener: OnListFragmentInteractionListener? = null
+    private var listener: OnListFragmentInteractionListener? = null
     private var ports: List<NmapXmlParser.Port>? = null
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
@@ -36,7 +32,7 @@ class ServicesInfoFragment : Fragment() {
             val context = view.context
             view.layoutManager = LinearLayoutManager(context)
             if (ports != null)
-                view.adapter = MyServicesInfoRecyclerViewAdapter(ports as List<NmapXmlParser.Port>, mListener)
+                view.adapter = MyServicesInfoRecyclerViewAdapter(ports as List<NmapXmlParser.Port>, listener)
         }
         return view
     }
@@ -45,7 +41,7 @@ class ServicesInfoFragment : Fragment() {
     override fun onAttach(context: Context?) {
         super.onAttach(context)
         if (context is OnListFragmentInteractionListener) {
-            mListener = context
+            listener = context
         } else {
             throw RuntimeException(context!!.toString() + " must implement OnListFragmentInteractionListener")
         }
@@ -53,18 +49,9 @@ class ServicesInfoFragment : Fragment() {
 
     override fun onDetach() {
         super.onDetach()
-        mListener = null
+        listener = null
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     *
-     *
-     * See the Android Training lesson [Communicating with Other Fragments](http://developer.android.com/training/basics/fragments/communicating.html) for more information.
-     */
     interface OnListFragmentInteractionListener {
         fun onListFragmentInteraction(item: NmapXmlParser.Port)
     }

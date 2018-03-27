@@ -1,10 +1,12 @@
-package com.andergranado.netscan.model.converters
+package com.andergranado.netscan.model
 
 import android.arch.persistence.room.TypeConverter
 import java.net.InetAddress
 import java.util.*
 
-
+/**
+ * An utility class for conversions between data types for storing them in a database.
+ */
 class Converters {
 
     @TypeConverter

@@ -4,9 +4,8 @@ import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey
 
 /**
- * Represents a single node in a network scan
+ * A single node in a network scan.
  */
-//@Entity(foreignKeys = arrayOf(@ForeignKey(entity = Node::class, parentColumns = arrayOf("id"), childColumns = arrayOf("scanId"))))
 @Entity
 open class Node() {
 
