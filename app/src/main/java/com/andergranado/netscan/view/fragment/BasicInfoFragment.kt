@@ -27,18 +27,18 @@ class BasicInfoFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (arguments != null) {
-            hostname = arguments.getString(ARG_HOSTNAME)
-            ip = arguments.getString(ARG_IP)
+            hostname = (arguments as Bundle).getString(ARG_HOSTNAME)
+            ip = (arguments as Bundle).getString(ARG_IP)
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        return inflater!!.inflate(R.layout.fragment_basic_info, container, false)
+        return inflater.inflate(R.layout.fragment_basic_info, container, false)
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         // View elements can only be accessed (even with Kotlin synthetic properties) after view creation
         ip_text.text = ip

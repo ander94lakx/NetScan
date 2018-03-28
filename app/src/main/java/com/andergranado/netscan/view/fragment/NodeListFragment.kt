@@ -31,14 +31,14 @@ class NodeListFragment : Fragment() {
         super.onCreate(savedInstanceState)
 
         if (arguments != null) {
-            scanId = arguments.getInt(ARG_SCAN_ID)
-            scanName = arguments.getString(ARG_SCAN_NAME)
+            scanId = (arguments as Bundle).getInt(ARG_SCAN_ID)
+            scanName = (arguments as Bundle).getString(ARG_SCAN_NAME)
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        val view = inflater!!.inflate(R.layout.fragment_node_list, container, false)
+        val view = inflater.inflate(R.layout.fragment_node_list, container, false)
 
         // Set the adapter
         if (view is RecyclerView) {

@@ -1,5 +1,6 @@
 package com.andergranado.netscan.view.fragment
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -38,13 +39,13 @@ class ScanDirectionFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private var scanType = ScanType.REGULAR
     private var listener: OnFragmentInteractionListener? = null
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        return inflater!!.inflate(R.layout.fragment_scan_direction, container, false)
+        return inflater.inflate(R.layout.fragment_scan_direction, container, false)
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val adapter = ArrayAdapter.createFromResource(context, R.array.scan_type, android.R.layout.simple_spinner_item)
         // Specify the layout to use when the list of choices appears
@@ -91,6 +92,7 @@ class ScanDirectionFragment : Fragment(), AdapterView.OnItemSelectedListener {
     // It's necessary for Android using view parameter even without using it
     fun startDirectionScan(v: View) {
         val hostStr = host_to_scan.text.toString()
+        val activity = activity as Activity
         if (ipPattern.matcher(hostStr).matches() || fqdnPattern.matcher(hostStr).matches()) {
             if (NmapRunner.isNetworkAvailable(activity))
                 ScanDirectionTask().execute(hostStr)
@@ -130,7 +132,7 @@ class ScanDirectionFragment : Fragment(), AdapterView.OnItemSelectedListener {
         }
 
         override fun doInBackground(vararg hosts: String) {
-            val nmapRunner = NmapRunner(activity, context, scanType)
+            val nmapRunner = NmapRunner(activity as Activity, context as Context, scanType)
             scan = nmapRunner.runScan(hosts.asList())
 
             if (!isCancelled) nmapRunner.scanProcess?.waitFor()
@@ -144,7 +146,7 @@ class ScanDirectionFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     intent.putExtra("scan", scan as Serializable)
                     startActivity(intent)
                 } else {
-                    AlertDialog.Builder(activity)
+                    AlertDialog.Builder(activity as Activity)
                             .setIcon(R.drawable.ic_warning)
                             .setTitle(R.string.error)
                             .setMessage(R.string.no_host_at)

@@ -24,9 +24,9 @@ class ServicesInfoFragment : Fragment() {
     private var listener: OnListFragmentInteractionListener? = null
     private var ports: List<NmapXmlParser.Port>? = null
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        val view = inflater!!.inflate(R.layout.services_info_list, container, false)
+        val view = inflater.inflate(R.layout.services_info_list, container, false)
 
         if (view is RecyclerView) {
             val context = view.context

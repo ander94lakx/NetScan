@@ -23,13 +23,13 @@ class ExtraInfoFragment : Fragment() {
     private var listener: OnFragmentInteractionListener? = null
     private var stats: NmapXmlParser.RunStats? = null
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        return inflater!!.inflate(R.layout.fragment_extra_info, container, false)
+        return inflater.inflate(R.layout.fragment_extra_info, container, false)
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         scanned_hosts_num.text = stats?.totalHosts.toString()
         scanned_hosts_num_up.text = stats?.hostsUp.toString()

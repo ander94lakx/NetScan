@@ -25,14 +25,14 @@ class ScanListFragment : Fragment() {
 
     private var listener: OnListFragmentInteractionListener? = null
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        val view = inflater!!.inflate(R.layout.fragment_scan_list, container, false)
+        val view = inflater.inflate(R.layout.fragment_scan_list, container, false)
 
         if (view is RecyclerView) {
             view.layoutManager = LinearLayoutManager(view.context)
 
-            val db = Room.databaseBuilder(context, AppDatabase::class.java, AppDatabase.DATABASE_NAME)
+            val db = Room.databaseBuilder(context as Context, AppDatabase::class.java, AppDatabase.DATABASE_NAME)
                     .allowMainThreadQueries().fallbackToDestructiveMigration().build()
             val scans: List<Scan> = db.scanDao().all
 
