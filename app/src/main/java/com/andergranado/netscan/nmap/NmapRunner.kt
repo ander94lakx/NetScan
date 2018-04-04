@@ -19,7 +19,7 @@ class NmapRunner(val activity: Activity,
 
     private val installer = NmapInstaller(activity, context)
     private val parser = NmapXmlParser()
-    private val nmapOutputDir = installer.nmapPath + "/nmap/output"
+    private val nmapOutputDir = "${installer.nmapPath}/nmap/output"
     private val nmapExec: File
     private var processOutputStream: DataOutputStream? = null
     private var processInputReader: BufferedReader? = null
@@ -70,7 +70,7 @@ class NmapRunner(val activity: Activity,
 
     private fun setupOutputFile(): File {
         val outputDir = File(nmapOutputDir)
-        val outputFile = File(nmapOutputDir + "/scan_direction.xml")
+        val outputFile = File("$nmapOutputDir/scan_direction.xml")
         if (!outputDir.exists())
             outputDir.mkdirs()
         else if (outputFile.exists())
@@ -81,14 +81,14 @@ class NmapRunner(val activity: Activity,
 
     private fun commandBuilder(hosts: List<String>, outputFile: File): String {
         var hostsString = " "
-        hosts.forEach { hostsString += it + " " }
+        hosts.forEach { hostsString += "$it " }
         val args = when (scanType) {
             ScanType.REGULAR -> ""
             ScanType.PING -> "-sn"
             ScanType.QUICK -> "-T4"
             ScanType.FULL -> "-A --no-stylesheet"
         }
-        return nmapExec.path + " " + args + hostsString + " -oX " + outputFile.path + "\n"
+        return "${nmapExec.path} $args $hostsString -oX ${outputFile.path}\n"
     }
 
     private fun endProcess() {
