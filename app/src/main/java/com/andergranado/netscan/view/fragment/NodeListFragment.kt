@@ -10,8 +10,8 @@ import android.view.View
 import android.view.ViewGroup
 import com.andergranado.netscan.R
 import com.andergranado.netscan.controller.MyNodeRecyclerViewAdapter
-import com.andergranado.netscan.model.AppDatabase
 import com.andergranado.netscan.model.Node
+import com.andergranado.netscan.model.db.AppDatabase
 import com.andergranado.netscan.view.fragment.NodeListFragment.OnListFragmentInteractionListener
 
 

@@ -1,52 +1,16 @@
 package com.andergranado.netscan.nmap
 
 import android.util.Xml
+import com.andergranado.netscan.model.*
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import java.io.IOException
 import java.io.InputStream
-import java.io.Serializable
 
 /**
  * A XML parser for Nmap XML command output
  */
 class NmapXmlParser {
-
-    data class NmapScan(val scanInfo: ScanInfo?,
-                        val hosts: List<Host>,
-                        val runStats: RunStats?) : Serializable
-
-    data class ScanInfo(val numServices: Int,
-                        val protocol: String,
-                        val services: List<Int>) : Serializable
-
-    data class Host(val status: HostStatus,
-                    val address: Address,
-                    val hostNames: List<HostName>,
-                    val ports: List<Port>) : Serializable
-
-    data class HostStatus(val state: String,
-                          val reason: String) : Serializable
-
-    data class Address(val address: String,
-                       val addressType: String) : Serializable
-
-    data class HostName(val name: String,
-                        val type: String) : Serializable
-
-    data class Port(val id: Int,
-                    val type: String,
-                    val service: String,
-                    val state: PortState) : Serializable
-
-    data class PortState(val state: String,
-                         val reason: String) : Serializable
-
-    data class RunStats(val timeElapsed: Float,
-                        val exit: String,
-                        val totalHosts: Int,
-                        val hostsUp: Int,
-                        val hostsDown: Int) : Serializable
 
     private val namespace: String? = null
 
@@ -86,10 +50,17 @@ class NmapXmlParser {
     private fun readScanInfo(parser: XmlPullParser): ScanInfo {
         parser.require(XmlPullParser.START_TAG, namespace, "scaninfo")
         val numServices = parser.getAttributeValue(null, "numservices").toInt()
-        val protocol = parser.getAttributeValue(null, "protocol")
+        val protocolStr = parser.getAttributeValue(null, "protocol")
         val services = parser.getAttributeValue(null, "services")
         parser.next()
 
+        val protocol = when (protocolStr) {
+            "ip" -> Protocol.IP
+            "tcp" -> Protocol.TCP
+            "udp" -> Protocol.UDP
+            "sctp" -> Protocol.SCTP
+            else -> Protocol.TCP // The default scan uses only TCP, and the XML attribute is required in the nmap.dtd
+        }
 
         return ScanInfo(numServices, protocol, servicesStringToList(services))
     }

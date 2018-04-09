@@ -11,8 +11,8 @@ import android.view.View
 import android.view.ViewGroup
 import com.andergranado.netscan.R
 import com.andergranado.netscan.controller.MyScanRecyclerViewAdapter
-import com.andergranado.netscan.model.AppDatabase
 import com.andergranado.netscan.model.Scan
+import com.andergranado.netscan.model.db.AppDatabase
 import com.andergranado.netscan.view.fragment.ScanListFragment.OnListFragmentInteractionListener
 
 /**

@@ -17,7 +17,7 @@ class NmapInstaller(val activity: Activity, val context: Context) {
 
     private val filePrefix: String = "nmap-7.31-android-"
     private val fileSuffix: String = "-bin.zip"
-    private val nmapBinPath = nmapPath + "/nmap/bin/nmap"
+    private val nmapBinPath = "$nmapPath/nmap/bin/nmap"
 
     init {
         install(false)
@@ -32,14 +32,14 @@ class NmapInstaller(val activity: Activity, val context: Context) {
                 var entry: ZipEntry = zin.nextEntry
                 do {
                     if (entry.isDirectory) {
-                        val myDir = File(nmapPath + "/" + entry.name)
+                        val myDir = File("$nmapPath/${entry.name}")
 
                         if (!myDir.isDirectory)
                             myDir.mkdirs()
 
                     } else {
                         val buffer = ByteArray(2048)
-                        val outStream = FileOutputStream(nmapPath + "/" + entry.name)
+                        val outStream = FileOutputStream("$nmapPath/${entry.name}")
                         val bufferOut = BufferedOutputStream(outStream, buffer.size)
 
                         var size = zin.read(buffer, 0, buffer.size)
@@ -81,7 +81,7 @@ class NmapInstaller(val activity: Activity, val context: Context) {
         val nmapExec = File(nmapBinPath)
         nmapExec.setExecutable(true)
 
-        outputStream.writeBytes(nmapExec.path + " --script-updatedb\n")
+        outputStream.writeBytes("${nmapExec.path} --script-updatedb\n")
         outputStream.writeBytes("exit\n")
         outputStream.flush()
         outputStream.close()

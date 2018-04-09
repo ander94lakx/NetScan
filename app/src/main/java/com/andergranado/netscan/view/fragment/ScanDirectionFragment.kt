@@ -15,8 +15,8 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import com.andergranado.netscan.R
+import com.andergranado.netscan.model.NmapScan
 import com.andergranado.netscan.nmap.NmapRunner
-import com.andergranado.netscan.nmap.NmapXmlParser
 import com.andergranado.netscan.nmap.ScanType
 import com.andergranado.netscan.view.activity.DirectionScanActivity
 import com.andergranado.netscan.view.fragment.ScanDirectionFragment.OnFragmentInteractionListener
@@ -121,7 +121,7 @@ class ScanDirectionFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     private inner class ScanDirectionTask : AsyncTask<String, Unit, Unit>() {
 
-        private var scan: NmapXmlParser.NmapScan? = null
+        private var scan: NmapScan? = null
 
         override fun onPreExecute() {
             super.onPreExecute()

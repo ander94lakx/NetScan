@@ -8,7 +8,9 @@ import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
 import android.support.v7.app.AppCompatActivity
 import com.andergranado.netscan.R
-import com.andergranado.netscan.nmap.NmapXmlParser
+import com.andergranado.netscan.model.NmapScan
+import com.andergranado.netscan.model.Port
+import com.andergranado.netscan.model.RunStats
 import com.andergranado.netscan.view.fragment.BasicInfoFragment
 import com.andergranado.netscan.view.fragment.ExtraInfoFragment
 import com.andergranado.netscan.view.fragment.ServicesInfoFragment
@@ -42,12 +44,12 @@ class DirectionScanActivity : AppCompatActivity(),
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        val scan = intent.extras.get("scan") as NmapXmlParser.NmapScan
+        val scan = intent.extras.get("scan") as NmapScan
 
         if (!scan.hosts.isEmpty()) {
             basicInfoFragment = BasicInfoFragment.newInstance(scan.hosts[0].hostNames[0].name, scan.hosts[0].address.address)
             servicesInfoFragment = ServicesInfoFragment.newInstance(scan.hosts[0].ports)
-            if (scan.runStats is NmapXmlParser.RunStats)
+            if (scan.runStats is RunStats)
                 extraInfoFragment = ExtraInfoFragment.newInstance(scan.runStats)
         }
 
@@ -64,7 +66,7 @@ class DirectionScanActivity : AppCompatActivity(),
 
     override fun onFragmentInteraction(uri: Uri) {}
 
-    override fun onListFragmentInteraction(item: NmapXmlParser.Port) {}
+    override fun onListFragmentInteraction(item: Port) {}
 
     /**
      * A [FragmentPagerAdapter] that returns a fragment corresponding to

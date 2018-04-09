@@ -1,6 +1,7 @@
-package com.andergranado.netscan.model
+package com.andergranado.netscan.model.db
 
 import android.arch.persistence.room.*
+import com.andergranado.netscan.model.Node
 
 /**
  * DAO interface with all the DB management for a [Node].
