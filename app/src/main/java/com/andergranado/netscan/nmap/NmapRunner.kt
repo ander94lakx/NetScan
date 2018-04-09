@@ -3,6 +3,7 @@ package com.andergranado.netscan.nmap
 import android.app.Activity
 import android.content.Context
 import android.net.ConnectivityManager
+import com.andergranado.netscan.model.NmapScan
 import java.io.BufferedReader
 import java.io.DataOutputStream
 import java.io.File
@@ -28,7 +29,7 @@ class NmapRunner(val activity: Activity,
         nmapExec = installer.install(false)
     }
 
-    fun runScan(hosts: List<String>): NmapXmlParser.NmapScan {
+    fun runScan(hosts: List<String>): NmapScan {
         startProcess()
         var outputFile = setupOutputFile()
 
