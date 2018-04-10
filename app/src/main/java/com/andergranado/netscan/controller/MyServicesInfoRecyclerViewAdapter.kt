@@ -26,9 +26,9 @@ class MyServicesInfoRecyclerViewAdapter(private val values: List<Port>,
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.item = values[position]
         holder.portIdView.text = values[position].id.toString()
-        holder.portTypeView.text = values[position].type
+        holder.portTypeView.text = values[position].type.toString()
         holder.portNameView.text = values[position].service
-        holder.portStateView.text = values[position].state.state
+        holder.portStateView.text = values[position].state.state.toString()
 
         holder.view.setOnClickListener {
             listener?.onListFragmentInteraction(holder.item as Port)

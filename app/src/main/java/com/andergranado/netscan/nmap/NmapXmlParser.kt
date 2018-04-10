@@ -50,17 +50,17 @@ class NmapXmlParser {
     private fun readScanInfo(parser: XmlPullParser): ScanInfo {
         parser.require(XmlPullParser.START_TAG, namespace, "scaninfo")
         val numServices = parser.getAttributeValue(null, "numservices").toInt()
-        val protocolStr = parser.getAttributeValue(null, "protocol")
-        val services = parser.getAttributeValue(null, "services")
-        parser.next()
-
-        val protocol = when (protocolStr) {
+        val protocol = when (parser.getAttributeValue(null, "protocol")) {
             "ip" -> Protocol.IP
             "tcp" -> Protocol.TCP
             "udp" -> Protocol.UDP
             "sctp" -> Protocol.SCTP
             else -> Protocol.TCP // The default scan uses only TCP, and the XML attribute is required in the nmap.dtd
         }
+        val services = parser.getAttributeValue(null, "services")
+        parser.next()
+
+
 
         return ScanInfo(numServices, protocol, servicesStringToList(services))
     }
@@ -112,7 +112,12 @@ class NmapXmlParser {
     private fun readStatus(parser: XmlPullParser): HostStatus {
         parser.require(XmlPullParser.START_TAG, namespace, "status")
         val reason = parser.getAttributeValue(null, "reason")
-        val state = parser.getAttributeValue(null, "state")
+        val state = when (parser.getAttributeValue(null, "state")) {
+            "up" -> HostStates.UP
+            "down" -> HostStates.DOWN
+            "skipped" -> HostStates.SKIPPED
+            else -> HostStates.UNKNOWN
+        }
         parser.next()
 
         return HostStatus(state, reason)
@@ -122,7 +127,11 @@ class NmapXmlParser {
     private fun readAddress(parser: XmlPullParser): Address {
         parser.require(XmlPullParser.START_TAG, namespace, "address")
         val addr = parser.getAttributeValue(null, "addr")
-        val addrType = parser.getAttributeValue(null, "addrtype")
+        val addrType = when (parser.getAttributeValue(null, "addrtype")) {
+            "ipv6" -> AddressType.IPV6
+            "mac" -> AddressType.MAC
+            else -> AddressType.IPV4
+        }
         parser.next()
 
         return Address(addr, addrType)
@@ -149,7 +158,7 @@ class NmapXmlParser {
     private fun readHostName(parser: XmlPullParser): HostName {
         parser.require(XmlPullParser.START_TAG, namespace, "hostname")
         val name = parser.getAttributeValue(null, "name")
-        val type = parser.getAttributeValue(null, "type")
+        val type = if (parser.getAttributeValue(null, "type") == "user") HostType.USER else HostType.PTR
         parser.next()
 
         return HostName(name, type)
@@ -177,10 +186,15 @@ class NmapXmlParser {
         parser.require(XmlPullParser.START_TAG, namespace, "port")
 
         val id = parser.getAttributeValue(null, "portid")
-        val protocol = parser.getAttributeValue(null, "protocol")
-
+        val protocol = when (parser.getAttributeValue(null, "protocol")) {
+            "ip" -> Protocol.IP
+            "tcp" -> Protocol.TCP
+            "udp" -> Protocol.UDP
+            "sctp" -> Protocol.SCTP
+            else -> Protocol.TCP // The default scan uses only TCP, and the XML attribute is required in the nmap.dtd
+        }
         var service = ""
-        var state = PortState("", "")
+        var state = PortState(StateType.UNKNOWN, "")
 
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.eventType != XmlPullParser.START_TAG)
@@ -195,13 +209,21 @@ class NmapXmlParser {
 
         parser.require(XmlPullParser.END_TAG, namespace, "port")
 
-        return Port(id.toInt(), protocol.toUpperCase(), service, state)
+        return Port(id.toInt(), protocol, service, state)
     }
 
     @Throws(IOException::class, XmlPullParserException::class)
     private fun readState(parser: XmlPullParser): PortState {
         parser.require(XmlPullParser.START_TAG, namespace, "state")
-        val state = parser.getAttributeValue(null, "state")
+        val state = when (parser.getAttributeValue(null, "state")) {
+            "open" -> StateType.OPEN
+            "filtered" -> StateType.FILTERED
+            "unfiltered" -> StateType.UNFILTERED
+            "closed" -> StateType.CLOSED
+            "open|filtered" -> StateType.OPEN_FILTERED
+            "closed|filtered" -> StateType.CLOSED_FILTERED
+            else ->StateType.UNKNOWN
+        }
         val reason = parser.getAttributeValue(null, "reason")
         parser.next()
 
@@ -223,7 +245,7 @@ class NmapXmlParser {
     @Throws(IOException::class, XmlPullParserException::class)
     private fun readRunStats(parser: XmlPullParser): RunStats {
         var timeElapsed = 0f
-        var exit = ""
+        var exit = Exit.ERROR
         var totalHosts = 0
         var hostsUp = 0
         var hostsDown = 0
@@ -236,7 +258,7 @@ class NmapXmlParser {
                 "finished" -> {
                     parser.require(XmlPullParser.START_TAG, namespace, "finished")
                     timeElapsed = parser.getAttributeValue(null, "elapsed").toFloat()
-                    exit = parser.getAttributeValue(null, "exit")
+                    exit = if (parser.getAttributeValue(null, "exit") == "error") Exit.ERROR else Exit.SUCCESS
                     parser.next()
                 }
                 "hosts" -> {
