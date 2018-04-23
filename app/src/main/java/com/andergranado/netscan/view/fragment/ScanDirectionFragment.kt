@@ -19,6 +19,7 @@ import com.andergranado.netscan.model.NmapScan
 import com.andergranado.netscan.nmap.NmapRunner
 import com.andergranado.netscan.nmap.ScanType
 import com.andergranado.netscan.view.activity.DirectionScanActivity
+import com.andergranado.netscan.view.activity.MainActivity
 import com.andergranado.netscan.view.fragment.ScanDirectionFragment.OnFragmentInteractionListener
 import kotlinx.android.synthetic.main.fragment_scan_direction.*
 import java.io.Serializable
@@ -87,6 +88,9 @@ class ScanDirectionFragment : Fragment(), AdapterView.OnItemSelectedListener {
     override fun onDetach() {
         super.onDetach()
         listener = null
+        val currentActivity = activity
+        if (currentActivity is MainActivity)
+            currentActivity.showScanFab()
     }
 
     // It's necessary for Android using view parameter even without using it
@@ -129,6 +133,9 @@ class ScanDirectionFragment : Fragment(), AdapterView.OnItemSelectedListener {
             host_to_scan.isEnabled = false
             scan_type_spinner.isEnabled = false
             progress_bar.visibility = View.VISIBLE
+            val currentActivity = activity
+            if (currentActivity is MainActivity)
+                currentActivity.hideScanFab()
         }
 
         override fun doInBackground(vararg hosts: String) {
@@ -158,6 +165,9 @@ class ScanDirectionFragment : Fragment(), AdapterView.OnItemSelectedListener {
             host_to_scan.isEnabled = true
             scan_type_spinner.isEnabled = true
             progress_bar.visibility = View.GONE
+            val currentActivity = activity
+            if (currentActivity is MainActivity)
+                currentActivity.showScanFab()
         }
     }
 }

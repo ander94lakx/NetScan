@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        fab.setOnClickListener {
+        netscan_fab.setOnClickListener {
             startActivity(Intent(this, NetworkScanActivity::class.java))
         }
 
@@ -118,4 +118,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     fun startDirectionScan(v: View) {
         scanDirectionFragment.startDirectionScan(v)
     }
+
+    fun hideScanFab() = netscan_fab.hide()
+
+    fun showScanFab() = netscan_fab.show()
 }
