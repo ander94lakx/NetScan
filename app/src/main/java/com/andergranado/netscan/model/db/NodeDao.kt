@@ -13,13 +13,13 @@ interface NodeDao {
     val all: List<Node>
 
     // TODO: Fix the parameter default name use whe Room Library fixes it
-    @Query("SELECT * FROM node WHERE id = :arg0")
+    @Query("SELECT * FROM node WHERE id = :id")
     fun getNode(id: Int): Node
 
-    @Query("SELECT * FROM node WHERE name = :arg0")
+    @Query("SELECT * FROM node WHERE name = :name")
     fun getNode(name: String): Node
 
-    @Query("SELECT * FROM node WHERE scanId = :arg0")
+    @Query("SELECT * FROM node WHERE scanId = :scanId")
     fun getNodesFromScan(scanId: Int): List<Node>
 
     @Update

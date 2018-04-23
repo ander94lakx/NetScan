@@ -14,13 +14,13 @@ interface ScanDao {
     val all: List<Scan>
 
     // TODO: Fix the parameter default name use whe Room Library fixes it
-    @Query("SELECT * FROM scan WHERE id = :arg0")
+    @Query("SELECT * FROM scan WHERE id = :id")
     fun getScan(id: Int): Scan
 
-    @Query("SELECT * FROM scan WHERE name = :arg0")
+    @Query("SELECT * FROM scan WHERE name = :name")
     fun getScan(name: String): Scan
 
-    @Query("SELECT * FROM node WHERE scanId = :arg0")
+    @Query("SELECT * FROM node WHERE scanId = :id")
     fun getNodeList(id: Int): List<Node>
 
     @Update
