@@ -11,7 +11,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import com.andergranado.netscan.R
-import com.andergranado.netscan.model.Scan
+import com.andergranado.netscan.model.db.Scan
 import com.andergranado.netscan.view.fragment.AboutFragment
 import com.andergranado.netscan.view.fragment.ScanDirectionFragment
 import com.andergranado.netscan.view.fragment.ScanListFragment

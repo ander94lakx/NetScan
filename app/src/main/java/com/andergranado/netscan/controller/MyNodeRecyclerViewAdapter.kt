@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.andergranado.netscan.R
-import com.andergranado.netscan.model.Node
+import com.andergranado.netscan.model.db.Node
 import com.andergranado.netscan.view.fragment.NodeListFragment.OnListFragmentInteractionListener
 
 /**
