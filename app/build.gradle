@@ -46,4 +46,7 @@ dependencies {
     // Room Persistence Library
     implementation "android.arch.persistence.room:runtime:1.0.0"
     kapt "android.arch.persistence.room:compiler:1.0.0"
+
+    // https://mvnrepository.com/artifact/commons-net/commons-net
+    implementation group: 'commons-net', name: 'commons-net', version: '3.6'
 }
