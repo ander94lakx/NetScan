@@ -8,6 +8,7 @@ import java.io.BufferedReader
 import java.io.DataOutputStream
 import java.io.File
 import java.io.InputStreamReader
+import java.util.Date
 
 /**
  * A class for running Nmap commands on the device.
@@ -47,6 +48,8 @@ class NmapRunner(private val scanType: ScanType = ScanType.REGULAR) {
 
         val scan = parser.parse(outputFile.inputStream())
 
+        outputFile.delete()
+
         endProcess()
 
         return scan
@@ -67,7 +70,7 @@ class NmapRunner(private val scanType: ScanType = ScanType.REGULAR) {
 
     private fun setupOutputFile(): File {
         val outputDir = File(nmapOutputDir)
-        val outputFile = File("$nmapOutputDir/scan_direction.xml")
+        val outputFile = File("$nmapOutputDir/scan_direction-" + Date().time.toString() + ".xml")
         if (!outputDir.exists())
             outputDir.mkdirs()
         else if (outputFile.exists())
