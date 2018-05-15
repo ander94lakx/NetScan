@@ -12,24 +12,20 @@ import java.io.InputStreamReader
 /**
  * A class for running Nmap commands on the device.
  */
-class NmapRunner(val activity: Activity,
-                 val context: Context,
-                 private val scanType: ScanType = ScanType.REGULAR) {
+class NmapRunner(private val scanType: ScanType = ScanType.REGULAR) {
 
     var scanProcess: Process? = null
 
-    private val installer = NmapInstaller(activity, context)
     private val parser = NmapXmlParser()
-    private val nmapOutputDir = "${installer.nmapPath}/nmap/output"
-    private val nmapExec: File
+    private val nmapOutputDir = "${NmapInstaller.nmapPath}/nmap/output"
     private var processOutputStream: DataOutputStream? = null
     private var processInputReader: BufferedReader? = null
 
-    init {
-        nmapExec = installer.install(false)
-    }
+    fun runScan(hosts: List<String>): NmapScan? {
 
-    fun runScan(hosts: List<String>): NmapScan {
+        if(!NmapInstaller.installed)
+            throw Exception("Nmap is not installed in the device") // TODO: Refactor this exception
+
         startProcess()
         var outputFile = setupOutputFile()
 
@@ -89,7 +85,7 @@ class NmapRunner(val activity: Activity,
             ScanType.QUICK -> "-T4"
             ScanType.FULL -> "-A --no-stylesheet"
         }
-        return "${nmapExec.path} $args $hostsString -oX ${outputFile.path}\n"
+        return "${NmapInstaller.nmapBinPath} $args $hostsString -oX ${outputFile.path}\n"
     }
 
     private fun endProcess() {
