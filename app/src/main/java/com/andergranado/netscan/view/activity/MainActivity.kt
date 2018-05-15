@@ -12,6 +12,7 @@ import android.view.MenuItem
 import android.view.View
 import com.andergranado.netscan.R
 import com.andergranado.netscan.model.db.Scan
+import com.andergranado.netscan.nmap.NmapInstaller
 import com.andergranado.netscan.view.fragment.AboutFragment
 import com.andergranado.netscan.view.fragment.ScanDirectionFragment
 import com.andergranado.netscan.view.fragment.ScanListFragment
@@ -51,6 +52,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         nav_view.setNavigationItemSelectedListener(this)
 
         supportFragmentManager.beginTransaction().add(R.id.content_main, scanListFragment).commit()
+
+        NmapInstaller.install(this)
     }
 
     override fun onBackPressed() {

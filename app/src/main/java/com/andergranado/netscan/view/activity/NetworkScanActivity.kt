@@ -80,7 +80,7 @@ class NetworkScanActivity : AppCompatActivity() {
         }
 
         override fun doInBackground(vararg __nothing: Unit) {
-            val nmapRunner = NmapRunner(activity, context, ScanType.REGULAR)
+            val nmapRunner = NmapRunner(ScanType.REGULAR)
             for (address in addresses) {
                 val inetAddress = InetAddress.getByName(address)
                 val reachable = inetAddress.isReachable(100)
@@ -90,9 +90,10 @@ class NetworkScanActivity : AppCompatActivity() {
 
                     if (!isCancelled) nmapRunner.scanProcess?.waitFor()
 
-                    if (singleHostScan.hosts.isNotEmpty())
-                        if (singleHostScan.hosts[0].status.state == HostStates.UP)
-                            publishProgress(singleHostScan)
+                    if (singleHostScan != null)
+                        if (singleHostScan.hosts.isNotEmpty())
+                            if (singleHostScan.hosts[0].status.state == HostStates.UP)
+                                publishProgress(singleHostScan)
                 }
             }
 

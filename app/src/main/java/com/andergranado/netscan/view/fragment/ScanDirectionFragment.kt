@@ -139,14 +139,14 @@ class ScanDirectionFragment : Fragment(), AdapterView.OnItemSelectedListener {
         }
 
         override fun doInBackground(vararg hosts: String) {
-            val nmapRunner = NmapRunner(activity as Activity, context as Context, scanType)
+            val nmapRunner = NmapRunner(scanType)
             scan = nmapRunner.runScan(hosts.asList())
 
             if (!isCancelled) nmapRunner.scanProcess?.waitFor()
         }
 
         override fun onPostExecute(result: Unit?) {
-            val scan = scan
+            val scan = scan // I love Kotlin
             if (scan != null) {
                 if (!scan.hosts.isEmpty()) {
                     val intent = Intent(activity, DirectionScanActivity::class.java)

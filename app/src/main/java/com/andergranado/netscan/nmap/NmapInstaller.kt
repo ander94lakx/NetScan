@@ -1,7 +1,6 @@
 package com.andergranado.netscan.nmap
 
 import android.app.Activity
-import android.content.Context
 import android.os.Build
 import android.util.Log
 import java.io.*
@@ -11,20 +10,28 @@ import java.util.zip.ZipInputStream
 /**
  * A class to extract and install Nmap binaries in the device.
  */
-class NmapInstaller(val activity: Activity, val context: Context) {
+object NmapInstaller {
 
-    val nmapPath: String = context.filesDir.path
+    var nmapPath: String? = null
+        private set
+    var nmapBinPath: String? = null
+        private set
 
-    private val filePrefix: String = "nmap-7.31-android-"
-    private val fileSuffix: String = "-bin.zip"
-    private val nmapBinPath = "$nmapPath/nmap/bin/nmap"
+    var installed = false
+        get() {
+            return field || nmapDirExists()
+        }
 
-    init {
-        install(false)
-    }
+    private const val filePrefix: String = "nmap-android-"
+    private const val fileSuffix: String = "-bin.zip"
 
-    fun install(force: Boolean = false): File {
-        if (!nmapDirExists() || force) {
+    fun install(activity: Activity, force: Boolean = false): File {
+
+        val context = activity.applicationContext
+        nmapPath = context.filesDir.path
+        nmapBinPath = "$nmapPath/nmap/bin/nmap"
+
+        if (!nmapDirExists() || !installed || force) {
             val assetManager = activity.assets
             val ins = assetManager.open(filePrefix + Build.SUPPORTED_ABIS[0] + fileSuffix)
             val zin = ZipInputStream(ins)
@@ -63,11 +70,21 @@ class NmapInstaller(val activity: Activity, val context: Context) {
         val nmapExec = File(nmapBinPath)
         nmapExec.setExecutable(true)
 
+        installed = true
+
         return nmapExec
     }
 
     private fun nmapDirExists(): Boolean {
-        return File(nmapBinPath).exists()
+        return if (nmapBinPath == null)
+            false
+        else {
+            if (File(nmapBinPath).exists()) {
+                installed = true
+                true
+            } else
+                false
+        }
     }
 
     private fun nseDbUpdate() {
