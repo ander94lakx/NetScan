@@ -34,7 +34,7 @@ class NodeListActivity : AppCompatActivity(), NodeListFragment.OnListFragmentInt
             scanName = getPreferences(Context.MODE_PRIVATE).getString("scan_name", "ERROR")
         }
 
-        title = scanId.toString() + " - " + scanName
+        title = scanName
         nodeListFragment = NodeListFragment.newInstance(scanId, scanName)
         supportFragmentManager.beginTransaction().add(R.id.content_node_list, nodeListFragment).commit()
     }
