@@ -13,7 +13,7 @@ import com.andergranado.netscan.view.fragment.NodeListFragment.OnListFragmentInt
  * [RecyclerView.Adapter] that can display a [Node] and makes a call to the
  * specified [OnListFragmentInteractionListener].
  */
-class MyNodeRecyclerViewAdapter(private val values: List<Node>,
+class MyNodeRecyclerViewAdapter(private val values: MutableList<Node>,
                                 private val listener: OnListFragmentInteractionListener?)
     : RecyclerView.Adapter<MyNodeRecyclerViewAdapter.ViewHolder>() {
 
@@ -36,6 +36,11 @@ class MyNodeRecyclerViewAdapter(private val values: List<Node>,
 
     override fun getItemCount(): Int {
         return values.size
+    }
+
+    fun addItem(node: Node) {
+        values.add(node)
+        notifyDataSetChanged()
     }
 
     inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {

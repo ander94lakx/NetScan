@@ -2,6 +2,7 @@ package com.andergranado.netscan.view.activity
 
 import android.arch.persistence.room.Room
 import android.content.Context
+import android.content.Intent
 import android.net.wifi.WifiManager
 import android.os.AsyncTask
 import android.os.Bundle
@@ -17,6 +18,7 @@ import com.andergranado.netscan.model.db.Node
 import com.andergranado.netscan.model.db.Scan
 import com.andergranado.netscan.nmap.NmapRunner
 import com.andergranado.netscan.nmap.ScanType
+import com.andergranado.netscan.view.fragment.NodeListFragment
 import kotlinx.android.synthetic.main.activity_network_scan.*
 import org.apache.commons.net.util.SubnetUtils
 import java.net.InetAddress
@@ -25,19 +27,22 @@ import java.util.*
 /**
  * An activity for run a Nmap network scan.
  */
-class NetworkScanActivity : AppCompatActivity() {
+class NetworkScanActivity : AppCompatActivity(),
+        NodeListFragment.OnListFragmentInteractionListener {
 
     var ended = false
+
+    private val nodeListFragment = NodeListFragment.newInstance() // No arguments passed to create an empty nodeListFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_network_scan)
         supportActionBar?.setDisplayHomeAsUpEnabled(false)
-
         setTitle(R.string.scanning)
 
         SequentialNetworkScanTask().execute()
-        network_scan_progress_bar.visibility = View.VISIBLE
+
+        supportFragmentManager.beginTransaction().add(R.id.activity_network_scan, nodeListFragment).commit()
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
@@ -52,6 +57,18 @@ class NetworkScanActivity : AppCompatActivity() {
             true
         } else {
             super.onKeyDown(keyCode, event)
+        }
+    }
+
+    override fun onListFragmentInteraction(item: Node) {
+        // TODO: maybe would be interesting doing something here?
+        if (ended) {
+            val intent = Intent(this, NodeListActivity::class.java)
+            val bundle = Bundle()
+            bundle.putInt("scan_id", item.id)
+            bundle.putString("scan_name", item.name)
+            intent.putExtras(bundle)
+            startActivity(intent)
         }
     }
 
@@ -77,13 +94,17 @@ class NetworkScanActivity : AppCompatActivity() {
 
             scanName = wm.connectionInfo.ssid.trim('"')
             addresses = SubnetUtils(ip, netmask).info.allAddresses
+
+            network_scan_progress_bar.max = addresses.size
+            network_scan_progress_bar.progress = 0
+            network_scan_progress_bar.visibility = View.VISIBLE
         }
 
         override fun doInBackground(vararg __nothing: Unit) {
             val nmapRunner = NmapRunner(ScanType.REGULAR)
             for (address in addresses) {
                 val inetAddress = InetAddress.getByName(address)
-                val reachable = inetAddress.isReachable(100)
+                val reachable = inetAddress.isReachable(300)
 
                 if (reachable) {
                     val singleHostScan = nmapRunner.runScan(listOf(address))
@@ -95,9 +116,9 @@ class NetworkScanActivity : AppCompatActivity() {
                             if (singleHostScan.hosts[0].status.state == HostStates.UP)
                                 publishProgress(singleHostScan)
                 }
-            }
 
-            if (!isCancelled) nmapRunner.scanProcess?.waitFor()
+                network_scan_progress_bar.progress++
+            }
         }
 
         override fun onProgressUpdate(vararg values: NmapScan?) {
@@ -114,9 +135,10 @@ class NetworkScanActivity : AppCompatActivity() {
 
                     val node = Node(++nodeId, name, ip, mac, scanId)
                     db.nodeDao().insertNode(node)
-                }
 
-                // TODO: Update the UI to show every host when It's discovered
+                    // TODO: Update the UI to show every host when It's discovered
+                    nodeListFragment.addNode(node)
+                }
             }
         }
 

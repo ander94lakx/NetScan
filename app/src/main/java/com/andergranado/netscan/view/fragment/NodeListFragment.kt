@@ -27,6 +27,8 @@ class NodeListFragment : Fragment() {
     private var scanName: String = ""
     private var listener: OnListFragmentInteractionListener? = null
 
+    private lateinit var nodeRecyclerViewAdapter: MyNodeRecyclerViewAdapter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -45,13 +47,12 @@ class NodeListFragment : Fragment() {
             val context = view.getContext()
             val db: AppDatabase = Room.databaseBuilder(context, AppDatabase::class.java, AppDatabase.DATABASE_NAME)
                     .allowMainThreadQueries().fallbackToDestructiveMigration().build()
-            val nodes: List<Node> =
-                    if (scanId == 0) // For testing purposes, TODO remove and refactor when all implemented
-                        db.nodeDao().all
-                    else
-                        db.nodeDao().getNodesFromScan(scanId)
+            val nodes: List<Node> = db.nodeDao().getNodesFromScan(scanId) // TODO: check wyhy sometimes this doesn't work
 
-            view.adapter = MyNodeRecyclerViewAdapter(nodes, listener)
+            val mutableNodes = mutableListOf<Node>()
+            mutableNodes.addAll(nodes)
+            nodeRecyclerViewAdapter = MyNodeRecyclerViewAdapter(mutableNodes, listener)
+            view.adapter = nodeRecyclerViewAdapter
         }
 
         return view
@@ -71,6 +72,10 @@ class NodeListFragment : Fragment() {
         listener = null
     }
 
+    fun addNode(node: Node) {
+        nodeRecyclerViewAdapter.addItem(node)
+    }
+
     interface OnListFragmentInteractionListener {
         fun onListFragmentInteraction(item: Node)
     }
@@ -86,6 +91,12 @@ class NodeListFragment : Fragment() {
             args.putInt(ARG_SCAN_ID, scanId)
             args.putString(ARG_SCAN_NAME, scanName)
             fragment.arguments = args
+            return fragment
+        }
+
+        fun newInstance(): NodeListFragment {
+            val fragment = NodeListFragment()
+            fragment.arguments = null
             return fragment
         }
     }

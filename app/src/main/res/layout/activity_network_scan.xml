@@ -2,6 +2,7 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_network_scan"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.andergranado.netscan.view.activity.NetworkScanActivity">
@@ -12,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fitsSystemWindows="false"
-        android:indeterminate="true"
+        android:indeterminate="false"
         android:visibility="gone" />
 
 </android.support.constraint.ConstraintLayout>
