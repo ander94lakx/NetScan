@@ -17,11 +17,12 @@ open class Node() {
 
     var scanId = 0
 
-    constructor(pId: Int, pName: String, pIp: String, pMac: ByteArray) : this() {
+    constructor(pId: Int, pName: String, pIp: String, pMac: ByteArray, pScanId: Int) : this() {
         id = pId
         name = pName
         ip = pIp
         mac = pMac
+        scanId = pScanId
     }
 
     fun getMacString(): String {

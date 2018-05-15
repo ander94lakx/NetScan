@@ -105,5 +105,12 @@ class NmapRunner(val activity: Activity,
             val activeNetworkInfo = connectivityManager.activeNetworkInfo
             return activeNetworkInfo != null && activeNetworkInfo.isConnected
         }
+
+        fun intToIp(i: Int): String {
+            return (i and 0xFF).toString() + "." +
+                    (i shr 8 and 0xFF) + "." +
+                    (i shr 16 and 0xFF) + "." +
+                    (i shr 24 and 0xFF)
+        }
     }
 }
