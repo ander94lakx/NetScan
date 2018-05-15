@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         ScanDirectionFragment.OnFragmentInteractionListener,
         AboutFragment.OnFragmentInteractionListener {
 
-    private val scanListFragment = ScanListFragment()
+    private var scanListFragment = ScanListFragment()
     private val scanDirectionFragment = ScanDirectionFragment()
     private val shareFragment = ShareFragment()
     private val aboutFragment = AboutFragment()
@@ -68,6 +68,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.main, menu)
         return true
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // That recreate the scanListFragment in order to show the new possible scans made in other activities
+        if (supportFragmentManager.fragments.last() is ScanListFragment) {
+            scanListFragment = ScanListFragment()
+            supportFragmentManager.beginTransaction().replace(R.id.content_main, scanListFragment).commit()
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
