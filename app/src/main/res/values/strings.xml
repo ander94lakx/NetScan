@@ -38,6 +38,7 @@
     <string name="direction_scan_tab_text_3">Extra</string>
 
     <string name="scanning">Scanning&#8230;</string>
+    <string name="scanned">Scanned&#33;</string>
 
     <string name="host">Host</string>
     <string name="no_host_at">"No host at that giver domain or IP"</string>

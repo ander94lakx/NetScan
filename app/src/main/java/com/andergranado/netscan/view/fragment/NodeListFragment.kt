@@ -10,8 +10,8 @@ import android.view.View
 import android.view.ViewGroup
 import com.andergranado.netscan.R
 import com.andergranado.netscan.controller.MyNodeRecyclerViewAdapter
-import com.andergranado.netscan.model.db.Node
 import com.andergranado.netscan.model.db.AppDatabase
+import com.andergranado.netscan.model.db.Node
 import com.andergranado.netscan.view.fragment.NodeListFragment.OnListFragmentInteractionListener
 
 
@@ -45,7 +45,11 @@ class NodeListFragment : Fragment() {
             val context = view.getContext()
             val db: AppDatabase = Room.databaseBuilder(context, AppDatabase::class.java, AppDatabase.DATABASE_NAME)
                     .allowMainThreadQueries().fallbackToDestructiveMigration().build()
-            val nodes: List<Node> = db.nodeDao().all
+            val nodes: List<Node> =
+                    if (scanId == 0) // For testing purposes, TODO remove and refactor when all implemented
+                        db.nodeDao().all
+                    else
+                        db.nodeDao().getNodesFromScan(scanId)
 
             view.adapter = MyNodeRecyclerViewAdapter(nodes, listener)
         }
