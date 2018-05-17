@@ -49,4 +49,7 @@ dependencies {
 
     // https://mvnrepository.com/artifact/commons-net/commons-net
     implementation group: 'commons-net', name: 'commons-net', version: '3.6'
+
+    // For simple debugging of the Room Database
+    debugImplementation 'com.amitshekhar.android:debug-db:1.0.3'
 }
