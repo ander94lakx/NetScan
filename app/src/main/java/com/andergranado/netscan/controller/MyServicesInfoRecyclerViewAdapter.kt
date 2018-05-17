@@ -6,14 +6,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.andergranado.netscan.R
-import com.andergranado.netscan.model.Port
+import com.andergranado.netscan.model.NmapPort
 import com.andergranado.netscan.view.fragment.ServicesInfoFragment.OnListFragmentInteractionListener
 
 /**
  * [RecyclerView.Adapter] that can display a [Port] and makes a call to the
  * specified [OnListFragmentInteractionListener].
  */
-class MyServicesInfoRecyclerViewAdapter(private val values: List<Port>,
+class MyServicesInfoRecyclerViewAdapter(private val values: List<NmapPort>,
                                         private val listener: OnListFragmentInteractionListener?)
     : RecyclerView.Adapter<MyServicesInfoRecyclerViewAdapter.ViewHolder>() {
 
@@ -31,7 +31,7 @@ class MyServicesInfoRecyclerViewAdapter(private val values: List<Port>,
         holder.portStateView.text = values[position].state.state.toString()
 
         holder.view.setOnClickListener {
-            listener?.onListFragmentInteraction(holder.item as Port)
+            listener?.onListFragmentInteraction(holder.item as NmapPort)
         }
     }
 
@@ -44,7 +44,7 @@ class MyServicesInfoRecyclerViewAdapter(private val values: List<Port>,
         val portTypeView: TextView = view.findViewById<View>(R.id.port_type) as TextView
         val portNameView: TextView = view.findViewById<View>(R.id.port_name) as TextView
         val portStateView: TextView = view.findViewById<View>(R.id.port_state) as TextView
-        var item: Port? = null
+        var item: NmapPort? = null
 
         override fun toString(): String {
             return super.toString() + " '" + portNameView.text + "'"

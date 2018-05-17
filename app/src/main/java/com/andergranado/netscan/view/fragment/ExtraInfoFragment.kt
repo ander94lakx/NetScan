@@ -8,7 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.andergranado.netscan.R
-import com.andergranado.netscan.model.RunStats
+import com.andergranado.netscan.model.NmapRunStats
 import com.andergranado.netscan.view.fragment.ExtraInfoFragment.OnFragmentInteractionListener
 import kotlinx.android.synthetic.main.fragment_extra_info.*
 
@@ -21,7 +21,7 @@ import kotlinx.android.synthetic.main.fragment_extra_info.*
 class ExtraInfoFragment : Fragment() {
 
     private var listener: OnFragmentInteractionListener? = null
-    private var stats: RunStats? = null
+    private var stats: NmapRunStats? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -57,7 +57,7 @@ class ExtraInfoFragment : Fragment() {
 
     companion object {
 
-        fun newInstance(stats: RunStats): ExtraInfoFragment {
+        fun newInstance(stats: NmapRunStats): ExtraInfoFragment {
             val fragment = ExtraInfoFragment()
             fragment.stats = stats
             return fragment

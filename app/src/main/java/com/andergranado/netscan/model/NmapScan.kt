@@ -2,6 +2,6 @@ package com.andergranado.netscan.model
 
 import java.io.Serializable
 
-data class NmapScan(val scanInfo: ScanInfo?,
-                    val hosts: List<Host>,
-                    val runStats: RunStats?) : Serializable
+data class NmapScan(val scanInfo: NmapScanInfo?,
+                    val hosts: List<NmapHost>,
+                    val runStats: NmapRunStats?) : Serializable

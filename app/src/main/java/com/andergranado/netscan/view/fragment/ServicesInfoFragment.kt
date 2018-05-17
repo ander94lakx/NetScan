@@ -10,7 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.andergranado.netscan.R
 import com.andergranado.netscan.controller.MyServicesInfoRecyclerViewAdapter
-import com.andergranado.netscan.model.Port
+import com.andergranado.netscan.model.NmapPort
 import com.andergranado.netscan.view.fragment.ServicesInfoFragment.OnListFragmentInteractionListener
 
 /**
@@ -22,7 +22,7 @@ import com.andergranado.netscan.view.fragment.ServicesInfoFragment.OnListFragmen
 class ServicesInfoFragment : Fragment() {
 
     private var listener: OnListFragmentInteractionListener? = null
-    private var ports: List<Port>? = null
+    private var ports: List<NmapPort>? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -32,7 +32,7 @@ class ServicesInfoFragment : Fragment() {
             val context = view.context
             view.layoutManager = LinearLayoutManager(context)
             if (ports != null)
-                view.adapter = MyServicesInfoRecyclerViewAdapter(ports as List<Port>, listener)
+                view.adapter = MyServicesInfoRecyclerViewAdapter(ports as List<NmapPort>, listener)
         }
         return view
     }
@@ -53,12 +53,12 @@ class ServicesInfoFragment : Fragment() {
     }
 
     interface OnListFragmentInteractionListener {
-        fun onListFragmentInteraction(item: Port)
+        fun onListFragmentInteraction(item: NmapPort)
     }
 
     companion object {
 
-        fun newInstance(ports: List<Port>): ServicesInfoFragment {
+        fun newInstance(ports: List<NmapPort>): ServicesInfoFragment {
             val fragment = ServicesInfoFragment()
             fragment.ports = ports
             return fragment

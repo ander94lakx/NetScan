@@ -27,9 +27,9 @@ class NmapXmlParser {
 
     @Throws(XmlPullParserException::class, IOException::class)
     private fun readNmapRun(parser: XmlPullParser): NmapScan {
-        var info: ScanInfo? = null
-        val hosts = mutableListOf<Host>()
-        var stats: RunStats? = null
+        var info: NmapScanInfo? = null
+        val hosts = mutableListOf<NmapHost>()
+        var stats: NmapRunStats? = null
 
         parser.require(XmlPullParser.START_TAG, namespace, "nmaprun")
         while (parser.next() != XmlPullParser.END_TAG) {
@@ -47,7 +47,7 @@ class NmapXmlParser {
     }
 
     @Throws(IOException::class, XmlPullParserException::class)
-    private fun readScanInfo(parser: XmlPullParser): ScanInfo {
+    private fun readScanInfo(parser: XmlPullParser): NmapScanInfo {
         parser.require(XmlPullParser.START_TAG, namespace, "scaninfo")
         val numServices = parser.getAttributeValue(null, "numservices").toInt()
         val protocol = when (parser.getAttributeValue(null, "protocol")) {
@@ -60,9 +60,7 @@ class NmapXmlParser {
         val services = parser.getAttributeValue(null, "services")
         parser.next()
 
-
-
-        return ScanInfo(numServices, protocol, servicesStringToList(services))
+        return NmapScanInfo(numServices, protocol, servicesStringToList(services))
     }
 
     private fun servicesStringToList(services: String): List<Int> {
@@ -84,11 +82,11 @@ class NmapXmlParser {
     }
 
     @Throws(IOException::class, XmlPullParserException::class)
-    private fun readHost(parser: XmlPullParser): Host {
+    private fun readHost(parser: XmlPullParser): NmapHost {
         var status: HostStatus? = null
         var address: Address? = null
         var hostNames = mutableListOf<HostName>()
-        var ports = mutableListOf<Port>()
+        var ports = mutableListOf<NmapPort>()
 
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.eventType != XmlPullParser.START_TAG)
@@ -103,7 +101,7 @@ class NmapXmlParser {
             }
         }
         if (status != null && address != null)
-            return Host(status, address, hostNames, ports)
+            return NmapHost(status, address, hostNames, ports)
         else
             throw XmlPullParserException("Can't read status or address")
     }
@@ -165,8 +163,8 @@ class NmapXmlParser {
     }
 
     @Throws(IOException::class, XmlPullParserException::class)
-    private fun readPorts(parser: XmlPullParser): MutableList<Port> {
-        val ports = mutableListOf<Port>()
+    private fun readPorts(parser: XmlPullParser): MutableList<NmapPort> {
+        val ports = mutableListOf<NmapPort>()
 
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.eventType != XmlPullParser.START_TAG)
@@ -182,7 +180,7 @@ class NmapXmlParser {
     }
 
     @Throws(IOException::class, XmlPullParserException::class)
-    private fun readPort(parser: XmlPullParser): Port {
+    private fun readPort(parser: XmlPullParser): NmapPort {
         parser.require(XmlPullParser.START_TAG, namespace, "port")
 
         val id = parser.getAttributeValue(null, "portid")
@@ -209,7 +207,7 @@ class NmapXmlParser {
 
         parser.require(XmlPullParser.END_TAG, namespace, "port")
 
-        return Port(id.toInt(), protocol, service, state)
+        return NmapPort(id.toInt(), protocol, service, state)
     }
 
     @Throws(IOException::class, XmlPullParserException::class)
@@ -243,7 +241,7 @@ class NmapXmlParser {
     }
 
     @Throws(IOException::class, XmlPullParserException::class)
-    private fun readRunStats(parser: XmlPullParser): RunStats {
+    private fun readRunStats(parser: XmlPullParser): NmapRunStats {
         var timeElapsed = 0f
         var exit = Exit.ERROR
         var totalHosts = 0
@@ -272,7 +270,7 @@ class NmapXmlParser {
             }
         }
 
-        return RunStats(timeElapsed, exit, totalHosts, hostsUp, hostsDown)
+        return NmapRunStats(timeElapsed, exit, totalHosts, hostsUp, hostsDown)
     }
 
     @Throws(XmlPullParserException::class, IOException::class)

@@ -1,4 +1,4 @@
-package com.andergranado.netscan.model
+package com.andergranado.netscan.model.db
 
 import android.arch.persistence.room.TypeConverter
 import java.net.InetAddress

@@ -9,8 +9,8 @@ import android.support.v4.app.FragmentPagerAdapter
 import android.support.v7.app.AppCompatActivity
 import com.andergranado.netscan.R
 import com.andergranado.netscan.model.NmapScan
-import com.andergranado.netscan.model.Port
-import com.andergranado.netscan.model.RunStats
+import com.andergranado.netscan.model.NmapPort
+import com.andergranado.netscan.model.NmapRunStats
 import com.andergranado.netscan.view.fragment.BasicInfoFragment
 import com.andergranado.netscan.view.fragment.ExtraInfoFragment
 import com.andergranado.netscan.view.fragment.ServicesInfoFragment
@@ -49,7 +49,7 @@ class DirectionScanActivity : AppCompatActivity(),
         if (!scan.hosts.isEmpty()) {
             basicInfoFragment = BasicInfoFragment.newInstance(scan.hosts[0].hostNames[0].name, scan.hosts[0].address.address)
             servicesInfoFragment = ServicesInfoFragment.newInstance(scan.hosts[0].ports)
-            if (scan.runStats is RunStats)
+            if (scan.runStats is NmapRunStats)
                 extraInfoFragment = ExtraInfoFragment.newInstance(scan.runStats)
         }
 
@@ -66,7 +66,7 @@ class DirectionScanActivity : AppCompatActivity(),
 
     override fun onFragmentInteraction(uri: Uri) {}
 
-    override fun onListFragmentInteraction(item: Port) {}
+    override fun onListFragmentInteraction(item: NmapPort) {}
 
     /**
      * A [FragmentPagerAdapter] that returns a fragment corresponding to
