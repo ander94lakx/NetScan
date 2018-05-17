@@ -30,6 +30,7 @@
     <string name="error">Error</string>
     <string name="not_valid_ip_domain">Not valid IP or domain</string>
     <string name="no_internet">There is no Internet connection</string>
+    <string name="no_wifi">WiFi is not enabled</string>
     <string name="title_activity_direction_info">DirectionInfoActivity</string>
 
     <string name="title_activity_direction_scan">Scan Direction</string>
@@ -37,6 +38,7 @@
     <string name="direction_scan_tab_text_2">Services</string>
     <string name="direction_scan_tab_text_3">Extra</string>
 
+    <string name="starting_scan">Starting scan&#8230;</string>
     <string name="scanning">Scanning&#8230;</string>
     <string name="scanned">Scanned&#33;</string>
 

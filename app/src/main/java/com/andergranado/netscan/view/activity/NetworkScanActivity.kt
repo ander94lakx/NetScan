@@ -3,6 +3,7 @@ package com.andergranado.netscan.view.activity
 import android.arch.persistence.room.Room
 import android.content.Context
 import android.content.Intent
+import android.net.wifi.SupplicantState
 import android.net.wifi.WifiManager
 import android.os.AsyncTask
 import android.os.Bundle
@@ -38,11 +39,25 @@ class NetworkScanActivity : AppCompatActivity(),
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_network_scan)
         supportActionBar?.setDisplayHomeAsUpEnabled(false)
-        setTitle(R.string.scanning)
-
-        SequentialNetworkScanTask().execute()
+        setTitle(R.string.starting_scan)
 
         supportFragmentManager.beginTransaction().add(R.id.activity_network_scan, nodeListFragment).commit()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val wm = applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+        if (wm.wifiState == WifiManager.WIFI_STATE_ENABLED
+                && wm.connectionInfo.supplicantState == SupplicantState.COMPLETED) {
+            SequentialNetworkScanTask().execute()
+        } else {
+            AlertDialog.Builder(this)
+                    .setIcon(R.drawable.ic_warning)
+                    .setTitle(R.string.error)
+                    .setMessage(R.string.no_wifi)
+                    .setPositiveButton(R.string.ok, { _, _ -> finish() })
+                    .show()
+        }
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
@@ -98,6 +113,7 @@ class NetworkScanActivity : AppCompatActivity(),
             network_scan_progress_bar.max = addresses.size
             network_scan_progress_bar.progress = 0
             network_scan_progress_bar.visibility = View.VISIBLE
+            setTitle(R.string.scanning)
         }
 
         override fun doInBackground(vararg __nothing: Unit) {
@@ -136,7 +152,6 @@ class NetworkScanActivity : AppCompatActivity(),
                     val node = Node(++nodeId, name, ip, mac, scanId)
                     db.nodeDao().insertNode(node)
 
-                    // TODO: Update the UI to show every host when It's discovered
                     nodeListFragment.addNode(node)
                 }
             }
