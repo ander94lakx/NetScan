@@ -9,16 +9,18 @@ import android.arch.persistence.room.PrimaryKey
 @Entity
 open class Node() {
 
-    @PrimaryKey(autoGenerate = false)
+    @PrimaryKey(autoGenerate = true)
     var id: Int = 0
-    var name: String = ""
-    var ip: String = ""
-    var mac: ByteArray = ByteArray(6)
 
     var scanId = 0
 
-    constructor(pId: Int, pName: String, pIp: String, pMac: ByteArray, pScanId: Int) : this() {
-        id = pId
+    var name: String = ""
+
+    var ip: String = ""
+
+    var mac: ByteArray = ByteArray(6)
+
+    constructor(pName: String, pIp: String, pMac: ByteArray, pScanId: Int) : this() {
         name = pName
         ip = pIp
         mac = pMac

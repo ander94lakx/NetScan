@@ -16,6 +16,7 @@ import com.andergranado.netscan.model.HostStates
 import com.andergranado.netscan.model.NmapScan
 import com.andergranado.netscan.model.db.AppDatabase
 import com.andergranado.netscan.model.db.Node
+import com.andergranado.netscan.model.db.Port
 import com.andergranado.netscan.model.db.Scan
 import com.andergranado.netscan.nmap.NmapRunner
 import com.andergranado.netscan.nmap.ScanType
@@ -23,7 +24,6 @@ import com.andergranado.netscan.view.fragment.NodeListFragment
 import kotlinx.android.synthetic.main.activity_network_scan.*
 import org.apache.commons.net.util.SubnetUtils
 import java.net.InetAddress
-import java.util.*
 
 /**
  * An activity for run a Nmap network scan.
@@ -93,8 +93,6 @@ class NetworkScanActivity : AppCompatActivity(),
         private val context = activity.applicationContext
 
         private var addresses: Array<String> = arrayOf()
-        private val scanId = Date().time.toInt()
-        private var nodeId = 0
 
         private var emptyScan = true
         private var scanName = ""
@@ -139,7 +137,7 @@ class NetworkScanActivity : AppCompatActivity(),
 
         override fun onProgressUpdate(vararg values: NmapScan?) {
             if (emptyScan) {
-                db.scanDao().insertScan(Scan(scanId, scanName))
+                db.scanDao().insertScan(Scan(scanName))
                 emptyScan = false
             }
 
@@ -148,10 +146,22 @@ class NetworkScanActivity : AppCompatActivity(),
                     val ip = scan.hosts[0].address.address
                     val name = if(scan.hosts[0].hostNames.isNotEmpty()) scan.hosts[0].hostNames[0].name else ip
                     val mac = ByteArray(6) // TODO: Implement the MAC direction obtainment method
+                    val scanId = db.scanDao().lastInsertedId()
 
-                    val node = Node(++nodeId, name, ip, mac, scanId)
+                    val node = Node(name, ip, mac, scanId)
                     db.nodeDao().insertNode(node)
 
+                    for (nmapPort in scan.hosts[0].ports) {
+                        val id = nmapPort.id
+                        val protocol = nmapPort.type
+                        val service = nmapPort.service
+                        val state = nmapPort.state.state
+                        val reason = nmapPort.state.reason
+                        val nodeId = db.nodeDao().lastInsertedId()
+
+                        val port = Port(id, nodeId, protocol, service, state, reason)
+                        db.portDao().insertPort(port)
+                    }
                     nodeListFragment.addNode(node)
                 }
             }

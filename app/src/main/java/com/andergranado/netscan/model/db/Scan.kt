@@ -10,15 +10,14 @@ import java.util.*
 @Entity
 class Scan() {
 
-    @PrimaryKey(autoGenerate = false)
+    @PrimaryKey(autoGenerate = true)
     var id: Int = 0
 
     var name: String = ""
 
     var date: Date = Date()
 
-    constructor(pId: Int, pName: String) : this() {
-        id = pId
+    constructor(pName: String) : this() {
         name = pName
     }
 

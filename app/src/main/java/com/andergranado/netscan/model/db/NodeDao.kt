@@ -11,9 +11,14 @@ interface NodeDao {
     @get:Query("SELECT * FROM node")
     val all: List<Node>
 
-    // TODO: Fix the parameter default name use whe Room Library fixes it
+    @Query("SELECT max(id) FROM node")
+    fun lastInsertedId(): Int
+
     @Query("SELECT * FROM node WHERE id = :id")
     fun getNode(id: Int): Node
+
+    @Query("SELECT * FROM node WHERE scanId = :scanId AND ip = :ip")
+    fun getNodeId(scanId: Int, ip: String): Node
 
     @Query("SELECT * FROM node WHERE name = :name")
     fun getNode(name: String): Node
