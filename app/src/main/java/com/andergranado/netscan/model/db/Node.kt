@@ -20,10 +20,13 @@ open class Node() {
 
     var mac: ByteArray = ByteArray(6)
 
-    constructor(pName: String, pIp: String, pMac: ByteArray, pScanId: Int) : this() {
+    var timeElapsed: Float = 0.0f
+
+    constructor(pName: String, pIp: String, pMac: ByteArray, pTimeElapsed: Float, pScanId: Int) : this() {
         name = pName
         ip = pIp
         mac = pMac
+        timeElapsed = pTimeElapsed
         scanId = pScanId
     }
 

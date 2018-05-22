@@ -14,10 +14,7 @@ import android.view.View
 import com.andergranado.netscan.R
 import com.andergranado.netscan.model.HostStates
 import com.andergranado.netscan.model.NmapScan
-import com.andergranado.netscan.model.db.AppDatabase
-import com.andergranado.netscan.model.db.Node
-import com.andergranado.netscan.model.db.Port
-import com.andergranado.netscan.model.db.Scan
+import com.andergranado.netscan.model.db.*
 import com.andergranado.netscan.nmap.NmapRunner
 import com.andergranado.netscan.nmap.ScanType
 import com.andergranado.netscan.view.fragment.NodeListFragment
@@ -96,6 +93,11 @@ class NetworkScanActivity : AppCompatActivity(),
 
         private var emptyScan = true
         private var scanName = ""
+        private var scanId = 0
+        private val scanStartTimestamp = System.nanoTime()
+        private var hostsUp = 0
+
+        private val pingTimeout = 300 // TODO: Make this a setting?
 
         private val db: AppDatabase = Room.databaseBuilder(context, AppDatabase::class.java, AppDatabase.DATABASE_NAME)
                 .allowMainThreadQueries().fallbackToDestructiveMigration().build()
@@ -118,7 +120,7 @@ class NetworkScanActivity : AppCompatActivity(),
             val nmapRunner = NmapRunner(ScanType.REGULAR)
             for (address in addresses) {
                 val inetAddress = InetAddress.getByName(address)
-                val reachable = inetAddress.isReachable(300)
+                val reachable = inetAddress.isReachable(pingTimeout)
 
                 if (reachable) {
                     val singleHostScan = nmapRunner.runScan(listOf(address))
@@ -138,6 +140,7 @@ class NetworkScanActivity : AppCompatActivity(),
         override fun onProgressUpdate(vararg values: NmapScan?) {
             if (emptyScan) {
                 db.scanDao().insertScan(Scan(scanName))
+                scanId = db.scanDao().lastInsertedId()
                 emptyScan = false
             }
 
@@ -146,10 +149,13 @@ class NetworkScanActivity : AppCompatActivity(),
                     val ip = scan.hosts[0].address.address
                     val name = if(scan.hosts[0].hostNames.isNotEmpty()) scan.hosts[0].hostNames[0].name else ip
                     val mac = ByteArray(6) // TODO: Implement the MAC direction obtainment method
+                    val timeElapsed: Float = if (scan.runStats != null) scan.runStats.timeElapsed else -1.0f
                     val scanId = db.scanDao().lastInsertedId()
 
-                    val node = Node(name, ip, mac, scanId)
+                    val node = Node(name, ip, mac, timeElapsed, scanId)
                     db.nodeDao().insertNode(node)
+
+                    nodeListFragment.addNode(node)
 
                     for (nmapPort in scan.hosts[0].ports) {
                         val id = nmapPort.id
@@ -162,12 +168,15 @@ class NetworkScanActivity : AppCompatActivity(),
                         val port = Port(id, nodeId, protocol, service, state, reason)
                         db.portDao().insertPort(port)
                     }
-                    nodeListFragment.addNode(node)
+
+                    hostsUp++
                 }
             }
         }
 
         override fun onPostExecute(result: Unit?) {
+            val scanTimeInSeconds = ((System.nanoTime() - scanStartTimestamp) / Math.pow(10.0, 9.0)).toFloat()
+            db.scanStatsDao().insertScanStats(ScanStats(scanId, addresses.size, hostsUp, addresses.size - hostsUp, scanTimeInSeconds))
             network_scan_progress_bar.visibility = View.GONE
             setTitle(R.string.scanned)
             ended = true

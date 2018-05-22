@@ -1,12 +1,11 @@
 package com.andergranado.netscan.model.db
 
 import android.arch.persistence.room.Entity
-import android.arch.persistence.room.PrimaryKey
 import com.andergranado.netscan.model.Protocol
 import com.andergranado.netscan.model.StateType
 
 /**
- * A single node in a network scan.
+ * A single port of a concrete node.
  */
 @Entity(primaryKeys = ["id", "nodeId"])
 open class Port() {
