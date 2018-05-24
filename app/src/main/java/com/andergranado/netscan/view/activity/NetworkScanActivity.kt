@@ -5,22 +5,18 @@ import android.content.Context
 import android.content.Intent
 import android.net.wifi.SupplicantState
 import android.net.wifi.WifiManager
-import android.os.AsyncTask
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.view.KeyEvent
 import android.view.View
 import com.andergranado.netscan.R
-import com.andergranado.netscan.model.HostStates
+import com.andergranado.netscan.async.SequentialNetworkScan
 import com.andergranado.netscan.model.NmapScan
-import com.andergranado.netscan.model.db.*
-import com.andergranado.netscan.nmap.NmapRunner
-import com.andergranado.netscan.nmap.ScanType
+import com.andergranado.netscan.model.db.AppDatabase
+import com.andergranado.netscan.model.db.Node
 import com.andergranado.netscan.view.fragment.NodeListFragment
 import kotlinx.android.synthetic.main.activity_network_scan.*
-import org.apache.commons.net.util.SubnetUtils
-import java.net.InetAddress
 
 /**
  * An activity for run a Nmap network scan.
@@ -32,21 +28,29 @@ class NetworkScanActivity : AppCompatActivity(),
 
     private val nodeListFragment = NodeListFragment.newInstance() // No arguments passed to create an empty nodeListFragment
 
+    private lateinit var db: AppDatabase
+    private lateinit var wifiManager: WifiManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_network_scan)
         supportActionBar?.setDisplayHomeAsUpEnabled(false)
         setTitle(R.string.starting_scan)
 
+        db = Room.databaseBuilder(applicationContext, AppDatabase::class.java, AppDatabase.DATABASE_NAME)
+                .allowMainThreadQueries().fallbackToDestructiveMigration().build()
+
+        wifiManager = applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+
         supportFragmentManager.beginTransaction().add(R.id.activity_network_scan, nodeListFragment).commit()
     }
 
     override fun onResume() {
         super.onResume()
-        val wm = applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
-        if (wm.wifiState == WifiManager.WIFI_STATE_ENABLED
-                && wm.connectionInfo.supplicantState == SupplicantState.COMPLETED) {
-            SequentialNetworkScanTask().execute()
+
+        if (wifiManager.wifiState == WifiManager.WIFI_STATE_ENABLED
+                && wifiManager.connectionInfo.supplicantState == SupplicantState.COMPLETED) {
+            NetworkScan().execute()
         } else {
             AlertDialog.Builder(this)
                     .setIcon(R.drawable.ic_warning)
@@ -84,31 +88,10 @@ class NetworkScanActivity : AppCompatActivity(),
         }
     }
 
-    private inner class SequentialNetworkScanTask : AsyncTask<Unit, NmapScan, Unit>() {
-
-        private val activity = this@NetworkScanActivity
-        private val context = activity.applicationContext
-
-        private var addresses: Array<String> = arrayOf()
-
-        private var emptyScan = true
-        private var scanName = ""
-        private var scanId = 0
-        private val scanStartTimestamp = System.nanoTime()
-        private var hostsUp = 0
-
-        private val pingTimeout = 300 // TODO: Make this a setting?
-
-        private val db: AppDatabase = Room.databaseBuilder(context, AppDatabase::class.java, AppDatabase.DATABASE_NAME)
-                .allowMainThreadQueries().fallbackToDestructiveMigration().build()
+    inner class NetworkScan : SequentialNetworkScan(db, wifiManager) {
 
         override fun onPreExecute() {
-            val wm = context.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
-            val ip = NmapRunner.intToIp(wm.connectionInfo.ipAddress)
-            val netmask = NmapRunner.intToIp(wm.dhcpInfo.netmask)
-
-            scanName = wm.connectionInfo.ssid.trim('"')
-            addresses = SubnetUtils(ip, netmask).info.allAddresses
+            super.onPreExecute()
 
             network_scan_progress_bar.max = addresses.size
             network_scan_progress_bar.progress = 0
@@ -116,67 +99,17 @@ class NetworkScanActivity : AppCompatActivity(),
             setTitle(R.string.scanning)
         }
 
-        override fun doInBackground(vararg __nothing: Unit) {
-            val nmapRunner = NmapRunner(ScanType.REGULAR)
-            for (address in addresses) {
-                val inetAddress = InetAddress.getByName(address)
-                val reachable = inetAddress.isReachable(pingTimeout)
-
-                if (reachable) {
-                    val singleHostScan = nmapRunner.runScan(listOf(address))
-
-                    if (!isCancelled) nmapRunner.scanProcess?.waitFor()
-
-                    if (singleHostScan != null)
-                        if (singleHostScan.hosts.isNotEmpty())
-                            if (singleHostScan.hosts[0].status.state == HostStates.UP)
-                                publishProgress(singleHostScan)
-                }
-
-                network_scan_progress_bar.progress++
-            }
-        }
-
         override fun onProgressUpdate(vararg values: NmapScan?) {
-            if (emptyScan) {
-                db.scanDao().insertScan(Scan(scanName))
-                scanId = db.scanDao().lastInsertedId()
-                emptyScan = false
-            }
+            super.onProgressUpdate(*values)
 
-            for (scan in values) {
-                if (scan is NmapScan && scan.hosts.isNotEmpty()) {
-                    val ip = scan.hosts[0].address.address
-                    val name = if(scan.hosts[0].hostNames.isNotEmpty()) scan.hosts[0].hostNames[0].name else ip
-                    val mac = ByteArray(6) // TODO: Implement the MAC direction obtainment method
-                    val timeElapsed: Float = if (scan.runStats != null) scan.runStats.timeElapsed else -1.0f
-                    val scanId = db.scanDao().lastInsertedId()
-
-                    val node = Node(name, ip, mac, timeElapsed, scanId)
-                    db.nodeDao().insertNode(node)
-
-                    nodeListFragment.addNode(node)
-
-                    for (nmapPort in scan.hosts[0].ports) {
-                        val id = nmapPort.id
-                        val protocol = nmapPort.type
-                        val service = nmapPort.service
-                        val state = nmapPort.state.state
-                        val reason = nmapPort.state.reason
-                        val nodeId = db.nodeDao().lastInsertedId()
-
-                        val port = Port(id, nodeId, protocol, service, state, reason)
-                        db.portDao().insertPort(port)
-                    }
-
-                    hostsUp++
-                }
-            }
+            network_scan_progress_bar.progress = triedHosts
+            if (currentNode is Node)
+                nodeListFragment.addNode(currentNode as Node)
         }
 
         override fun onPostExecute(result: Unit?) {
-            val scanTimeInSeconds = ((System.nanoTime() - scanStartTimestamp) / Math.pow(10.0, 9.0)).toFloat()
-            db.scanStatsDao().insertScanStats(ScanStats(scanId, addresses.size, hostsUp, addresses.size - hostsUp, scanTimeInSeconds))
+            super.onPostExecute(result)
+
             network_scan_progress_bar.visibility = View.GONE
             setTitle(R.string.scanned)
             ended = true
