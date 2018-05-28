@@ -1,6 +1,5 @@
 package com.andergranado.netscan.view.activity
 
-import android.arch.persistence.room.Room
 import android.content.Context
 import android.content.Intent
 import android.net.wifi.SupplicantState
@@ -37,8 +36,7 @@ class NetworkScanActivity : AppCompatActivity(),
         supportActionBar?.setDisplayHomeAsUpEnabled(false)
         setTitle(R.string.starting_scan)
 
-        db = Room.databaseBuilder(applicationContext, AppDatabase::class.java, AppDatabase.DATABASE_NAME)
-                .allowMainThreadQueries().fallbackToDestructiveMigration().build()
+        db = AppDatabase.getInstance(applicationContext)
 
         wifiManager = applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
 

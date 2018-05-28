@@ -1,6 +1,5 @@
 package com.andergranado.netscan.view.fragment
 
-import android.arch.persistence.room.Room
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -44,9 +43,7 @@ class NodeListFragment : Fragment() {
 
         // Set the adapter
         if (view is RecyclerView) {
-            val context = view.getContext()
-            val db: AppDatabase = Room.databaseBuilder(context, AppDatabase::class.java, AppDatabase.DATABASE_NAME)
-                    .allowMainThreadQueries().fallbackToDestructiveMigration().build()
+            val db: AppDatabase = AppDatabase.getInstance(view.context)
             val nodes: List<Node> = db.nodeDao().getNodesFromScan(scanId) // TODO: check wyhy sometimes this doesn't work
 
             val mutableNodes = mutableListOf<Node>()

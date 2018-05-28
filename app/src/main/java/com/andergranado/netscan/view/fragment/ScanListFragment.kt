@@ -1,6 +1,5 @@
 package com.andergranado.netscan.view.fragment
 
-import android.arch.persistence.room.Room
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -11,8 +10,8 @@ import android.view.View
 import android.view.ViewGroup
 import com.andergranado.netscan.R
 import com.andergranado.netscan.controller.MyScanRecyclerViewAdapter
-import com.andergranado.netscan.model.db.Scan
 import com.andergranado.netscan.model.db.AppDatabase
+import com.andergranado.netscan.model.db.Scan
 import com.andergranado.netscan.view.fragment.ScanListFragment.OnListFragmentInteractionListener
 
 /**
@@ -32,8 +31,7 @@ class ScanListFragment : Fragment() {
         if (view is RecyclerView) {
             view.layoutManager = LinearLayoutManager(view.context)
 
-            val db = Room.databaseBuilder(context as Context, AppDatabase::class.java, AppDatabase.DATABASE_NAME)
-                    .allowMainThreadQueries().fallbackToDestructiveMigration().build()
+            val db = AppDatabase.getInstance(view.context)
             val scans: List<Scan> = db.scanDao().all
 
             view.adapter = MyScanRecyclerViewAdapter(scans, listener)
