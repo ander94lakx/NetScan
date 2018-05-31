@@ -7,28 +7,14 @@ import android.arch.persistence.room.PrimaryKey
  * A single node in a network scan.
  */
 @Entity
-open class Node() {
+open class Node(val name: String,
+                val ip: String,
+                val mac: ByteArray,
+                val timeElapsed: Float,
+                val scanId: Int) {
 
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0
-
-    var scanId = 0
-
-    var name: String = ""
-
-    var ip: String = ""
-
-    var mac: ByteArray = ByteArray(6)
-
-    var timeElapsed: Float = 0.0f
-
-    constructor(pName: String, pIp: String, pMac: ByteArray, pTimeElapsed: Float, pScanId: Int) : this() {
-        name = pName
-        ip = pIp
-        mac = pMac
-        timeElapsed = pTimeElapsed
-        scanId = pScanId
-    }
 
     fun getMacString(): String {
         return mac[0].toInt().toString() +
