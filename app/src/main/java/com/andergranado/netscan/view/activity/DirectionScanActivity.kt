@@ -11,6 +11,8 @@ import com.andergranado.netscan.R
 import com.andergranado.netscan.model.NmapScan
 import com.andergranado.netscan.model.NmapPort
 import com.andergranado.netscan.model.NmapRunStats
+import com.andergranado.netscan.model.Protocol
+import com.andergranado.netscan.model.db.Port
 import com.andergranado.netscan.view.fragment.BasicInfoFragment
 import com.andergranado.netscan.view.fragment.ExtraInfoFragment
 import com.andergranado.netscan.view.fragment.ServicesInfoFragment
@@ -48,7 +50,12 @@ class DirectionScanActivity : AppCompatActivity(),
 
         if (!scan.hosts.isEmpty()) {
             basicInfoFragment = BasicInfoFragment.newInstance(scan.hosts[0].hostNames[0].name, scan.hosts[0].address.address)
-            servicesInfoFragment = ServicesInfoFragment.newInstance(scan.hosts[0].ports)
+
+            val ports = mutableListOf<Port>()
+            for (nmapPort in scan.hosts[0].ports) {
+                ports.add(Port(nmapPort.id, 0, nmapPort.type, nmapPort.service, nmapPort.state.state, nmapPort.state.reason))
+            }
+            servicesInfoFragment = ServicesInfoFragment.newInstance(ports.toList())
             if (scan.runStats is NmapRunStats)
                 extraInfoFragment = ExtraInfoFragment.newInstance(scan.runStats)
         }
@@ -66,7 +73,7 @@ class DirectionScanActivity : AppCompatActivity(),
 
     override fun onFragmentInteraction(uri: Uri) {}
 
-    override fun onListFragmentInteraction(item: NmapPort) {}
+    override fun onListFragmentInteraction(item: Port) {}
 
     /**
      * A [FragmentPagerAdapter] that returns a fragment corresponding to
