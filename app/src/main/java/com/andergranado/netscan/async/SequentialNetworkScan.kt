@@ -14,7 +14,7 @@ import java.net.InetAddress
  * An AsyncTask to make a full scan of the current connected WiFi network, witch saves all
  * the collected data in the app's database. This class makes the scan sequentially, i.e. one by one
  */
-open class SequentialNetworkScan(private val db: AppDatabase, private val wifiManager: WifiManager) : AsyncTask<Unit, NmapScan, Unit>() {
+abstract class SequentialNetworkScan(private val db: AppDatabase, private val wifiManager: WifiManager) : AsyncTask<Unit, NmapScan, Unit>() {
 
     protected var addresses: Array<String> = arrayOf()
     protected var currentNode: Node? = null
@@ -53,6 +53,7 @@ open class SequentialNetworkScan(private val db: AppDatabase, private val wifiMa
                     publishProgress(singleHostScan)
             }
             triedHosts++
+            updateUi()
         }
     }
 
@@ -98,4 +99,10 @@ open class SequentialNetworkScan(private val db: AppDatabase, private val wifiMa
         val scanTimeInSeconds = ((System.nanoTime() - scanStartTimestamp) / Math.pow(10.0, 9.0)).toFloat()
         db.scanStatsDao().insertScanStats(ScanStats(scanId, addresses.size, hostsUp, addresses.size - hostsUp, scanTimeInSeconds))
     }
+
+    /**
+     * This method is called in parent class when a concrete node is scanned and must be
+     * implemented in child classes to modify the UI to show the progress
+     */
+    abstract fun updateUi()
 }
