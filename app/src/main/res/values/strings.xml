@@ -131,5 +131,7 @@
     <string name="pref_title_vibrate">Vibrate</string>
     <string name="ip_address">IP address</string>
     <string name="hostname">Hostname</string>
+    <string name="mac_address">MAC address</string>
+    <string name="vendor">Vendor</string>
 
 </resources>

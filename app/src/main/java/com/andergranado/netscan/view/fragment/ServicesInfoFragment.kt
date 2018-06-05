@@ -10,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import com.andergranado.netscan.R
 import com.andergranado.netscan.controller.MyServicesInfoRecyclerViewAdapter
-import com.andergranado.netscan.model.NmapPort
 import com.andergranado.netscan.model.db.Port
 import com.andergranado.netscan.view.fragment.ServicesInfoFragment.OnListFragmentInteractionListener
 
@@ -23,7 +22,9 @@ import com.andergranado.netscan.view.fragment.ServicesInfoFragment.OnListFragmen
 class ServicesInfoFragment : Fragment() {
 
     private var listener: OnListFragmentInteractionListener? = null
-    private var ports: List<Port>? = null
+    private var ports = mutableListOf<Port>()
+
+    private lateinit var servicesRecyclerViewAdapter: MyServicesInfoRecyclerViewAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -32,8 +33,8 @@ class ServicesInfoFragment : Fragment() {
         if (view is RecyclerView) {
             val context = view.context
             view.layoutManager = LinearLayoutManager(context)
-            if (ports != null)
-                view.adapter = MyServicesInfoRecyclerViewAdapter(ports as List<Port>, listener)
+            servicesRecyclerViewAdapter = MyServicesInfoRecyclerViewAdapter(ports, listener)
+            view.adapter = servicesRecyclerViewAdapter
         }
         return view
     }
@@ -53,6 +54,16 @@ class ServicesInfoFragment : Fragment() {
         listener = null
     }
 
+    fun addService(port: Port) {
+        ports.add(port)
+        servicesRecyclerViewAdapter.addItem(port)
+    }
+
+    fun addServices(ports: List<Port>) {
+        for (port in ports)
+            addService(port)
+    }
+
     interface OnListFragmentInteractionListener {
         fun onListFragmentInteraction(item: Port)
     }
@@ -61,7 +72,7 @@ class ServicesInfoFragment : Fragment() {
 
         fun newInstance(ports: List<Port>): ServicesInfoFragment {
             val fragment = ServicesInfoFragment()
-            fragment.ports = ports
+            fragment.ports = ports.toMutableList()
             return fragment
         }
     }

@@ -14,7 +14,7 @@ import com.andergranado.netscan.view.fragment.ServicesInfoFragment.OnListFragmen
  * [RecyclerView.Adapter] that can display a [Port] and makes a call to the
  * specified [OnListFragmentInteractionListener].
  */
-class MyServicesInfoRecyclerViewAdapter(private val values: List<Port>,
+class MyServicesInfoRecyclerViewAdapter(private val values: MutableList<Port>,
                                         private val listener: OnListFragmentInteractionListener?)
     : RecyclerView.Adapter<MyServicesInfoRecyclerViewAdapter.ViewHolder>() {
 
@@ -38,6 +38,11 @@ class MyServicesInfoRecyclerViewAdapter(private val values: List<Port>,
 
     override fun getItemCount(): Int {
         return values.size
+    }
+
+    fun addItem(port: Port) {
+        values.add(port)
+        notifyDataSetChanged()
     }
 
     inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {

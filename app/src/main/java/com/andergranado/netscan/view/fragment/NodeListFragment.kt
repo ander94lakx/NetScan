@@ -44,11 +44,8 @@ class NodeListFragment : Fragment() {
         // Set the adapter
         if (view is RecyclerView) {
             val db: AppDatabase = AppDatabase.getInstance(view.context)
-            val nodes: List<Node> = db.nodeDao().getNodesFromScan(scanId) // TODO: check wyhy sometimes this doesn't work
-
-            val mutableNodes = mutableListOf<Node>()
-            mutableNodes.addAll(nodes)
-            nodeRecyclerViewAdapter = MyNodeRecyclerViewAdapter(mutableNodes, listener)
+            val nodes = db.nodeDao().getNodesFromScan(scanId) // TODO: check wyhy sometimes this doesn't work
+            nodeRecyclerViewAdapter = MyNodeRecyclerViewAdapter(nodes.toMutableList(), listener)
             view.adapter = nodeRecyclerViewAdapter
         }
 

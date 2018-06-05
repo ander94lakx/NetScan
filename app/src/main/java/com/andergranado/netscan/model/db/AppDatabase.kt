@@ -31,7 +31,7 @@ abstract class AppDatabase : RoomDatabase() {
                 synchronized(AppDatabase::class) {
                     instance = Room.databaseBuilder(context, AppDatabase::class.java, DATABASE_NAME)
                             .allowMainThreadQueries() // TODO: Maybe this is not the best idea... Should I change it?
-                            //.fallbackToDestructiveMigration()
+                            .fallbackToDestructiveMigration()
                             .build()
                 }
             }
