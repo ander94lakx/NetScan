@@ -100,7 +100,6 @@ class NetworkScanActivity : AppCompatActivity(),
         override fun onProgressUpdate(vararg values: NmapScan?) {
             super.onProgressUpdate(*values)
 
-            network_scan_progress_bar.progress = triedHosts
             if (currentNode is Node)
                 nodeListFragment.addNode(currentNode as Node)
         }
@@ -111,6 +110,10 @@ class NetworkScanActivity : AppCompatActivity(),
             network_scan_progress_bar.visibility = View.GONE
             setTitle(R.string.scanned)
             ended = true
+        }
+
+        override fun updateUi() {
+            network_scan_progress_bar.progress = triedHosts
         }
     }
 }
