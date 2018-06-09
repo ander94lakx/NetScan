@@ -22,7 +22,7 @@ import com.andergranado.netscan.view.fragment.NodeListFragment.OnListFragmentInt
  */
 class NodeListFragment : Fragment() {
 
-    private var scanId: Int = 0
+    private var scanId: Int? = null
     private var scanName: String = ""
     private var listener: OnListFragmentInteractionListener? = null
 
@@ -44,7 +44,11 @@ class NodeListFragment : Fragment() {
         // Set the adapter
         if (view is RecyclerView) {
             val db: AppDatabase = AppDatabase.getInstance(view.context)
-            val nodes = db.nodeDao().getNodesFromScan(scanId) // TODO: check wyhy sometimes this doesn't work
+            val nodes =
+                    if (scanId != null)
+                        db.nodeDao().getNodesFromScan(scanId!!)
+                    else
+                        listOf()
             nodeRecyclerViewAdapter = MyNodeRecyclerViewAdapter(nodes.toMutableList(), listener)
             view.adapter = nodeRecyclerViewAdapter
         }
