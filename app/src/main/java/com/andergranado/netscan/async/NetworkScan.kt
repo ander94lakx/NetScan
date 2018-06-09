@@ -2,12 +2,14 @@ package com.andergranado.netscan.async
 
 import android.net.wifi.WifiManager
 import android.os.AsyncTask
-import com.andergranado.netscan.model.NmapScan
-import com.andergranado.netscan.model.db.*
+import com.andergranado.netscan.model.db.AppDatabase
+import com.andergranado.netscan.model.db.Node
+import com.andergranado.netscan.model.db.Scan
+import com.andergranado.netscan.model.db.ScanStats
 import com.andergranado.netscan.nmap.NmapRunner
 import org.apache.commons.net.util.SubnetUtils
 
-abstract class NetworkScan(private val db: AppDatabase, private val wifiManager: WifiManager) : AsyncTask<Unit, NmapScan, Unit>() {
+abstract class NetworkScan(protected val db: AppDatabase, private val wifiManager: WifiManager) : AsyncTask<Unit, Node, Unit>() {
 
     open val pingTimeout = 300 // TODO: Make this a setting?
 
@@ -31,42 +33,16 @@ abstract class NetworkScan(private val db: AppDatabase, private val wifiManager:
         scanStartTimestamp = System.nanoTime()
     }
 
-    override fun onProgressUpdate(vararg values: NmapScan?) {
+    override fun onProgressUpdate(vararg values: Node?) {
         if (emptyScan) {
             db.scanDao().insertScan(Scan(scanName))
             scanId = db.scanDao().lastInsertedId()
             emptyScan = false
         }
 
-        for (scan in values) {
-            if (scan is NmapScan && scan.hosts.isNotEmpty()) {
-                val ip = scan.hosts[0].address.address
-                val name = if (scan.hosts[0].hostNames.isNotEmpty()) scan.hosts[0].hostNames[0].name else ip
-                val mac = "00:00:00:00:00:00" // TODO: Implement the MAC direction obtainment method
-                val timeElapsed: Float = if (scan.runStats != null) scan.runStats.timeElapsed else -1.0f
-                val scanId = db.scanDao().lastInsertedId()
-
-                currentNode = Node(name, ip, mac, timeElapsed, scanId)
-                db.nodeDao().insertNode(currentNode as Node)
-
-
-                for (nmapPort in scan.hosts[0].ports) {
-                    val id = nmapPort.id
-                    val protocol = nmapPort.type
-                    val service = nmapPort.service
-                    val state = nmapPort.state.state
-                    val reason = nmapPort.state.reason
-                    val nodeId = db.nodeDao().lastInsertedId()
-
-                    val port = Port(id, nodeId, protocol, service, state, reason)
-                    db.portDao().insertPort(port)
-                }
-            } else {
-                currentNode = null
-            }
-
-            hostsUp++
-        }
+        for (scan in values)
+            if (scan != null)
+                hostsUp++
     }
 
     override fun onPostExecute(result: Unit?) {
