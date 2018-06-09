@@ -44,7 +44,7 @@ class NodeInfoActivity : AppCompatActivity(), ServicesInfoFragment.OnListFragmen
 
         node_info_name.text = node.name
         node_info_ip.text = node.ip
-        node_info_mac.text = node.getMacString()
+        node_info_mac.text = node.mac
         node_info_vendor.text = "unknown" // TODO: change this when vendor name is implemented
 
         servicesInfoFragment = supportFragmentManager.findFragmentById(R.id.fragment_node_ports) as ServicesInfoFragment

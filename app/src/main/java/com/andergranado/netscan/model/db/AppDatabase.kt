@@ -9,7 +9,7 @@ import android.content.Context
 /**
  * A [RoomDatabase] subclass to interact with the database and their DAOs.
  */
-@Database(entities = [Scan::class, Node::class, Port::class, ScanStats::class], version = 5)
+@Database(entities = [Scan::class, Node::class, Port::class, ScanStats::class], version = 6)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
 

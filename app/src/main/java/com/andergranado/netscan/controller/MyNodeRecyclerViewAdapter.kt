@@ -27,7 +27,7 @@ class MyNodeRecyclerViewAdapter(private val values: MutableList<Node>,
         holder.item = values[position]
         holder.nodeNameView.text = values[position].name
         holder.nodeIpView.text = values[position].ip
-        holder.nodeMacView.text = values[position].getMacString()
+        holder.nodeMacView.text = values[position].mac
 
         holder.view.setOnClickListener {
             listener?.onListFragmentInteraction(holder.item as Node)

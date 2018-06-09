@@ -22,38 +22,6 @@ class Converters {
     }
 
     @TypeConverter
-    fun fromMacString(value: String?): ByteArray? {
-        return if (value == null) null
-        else {
-            val mac = ByteArray(6)
-            for ((index, char) in value.withIndex())
-                mac[index] = char.toByte()
-            mac
-        }
-    }
-
-    @TypeConverter
-    fun macToString(mac: ByteArray?): String? {
-        return if (mac == null) null
-        else {
-            var str = ""
-            for (byte in mac)
-                str += byte.toChar()
-            str
-        }
-    }
-
-    @TypeConverter
-    fun fromIpString(value: String?): InetAddress? {
-        return if (value == null) null else InetAddress.getByName(value)
-    }
-
-    @TypeConverter
-    fun ipToString(ip: InetAddress?): String? {
-        return ip?.toString()
-    }
-
-    @TypeConverter
     fun fromProtocolString(value: String?): Protocol? {
         return if (value == null) null else Protocol.valueOf(value)
     }

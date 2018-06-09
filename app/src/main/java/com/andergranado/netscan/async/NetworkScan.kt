@@ -42,7 +42,7 @@ abstract class NetworkScan(private val db: AppDatabase, private val wifiManager:
             if (scan is NmapScan && scan.hosts.isNotEmpty()) {
                 val ip = scan.hosts[0].address.address
                 val name = if (scan.hosts[0].hostNames.isNotEmpty()) scan.hosts[0].hostNames[0].name else ip
-                val mac = ByteArray(6) // TODO: Implement the MAC direction obtainment method
+                val mac = "00:00:00:00:00:00" // TODO: Implement the MAC direction obtainment method
                 val timeElapsed: Float = if (scan.runStats != null) scan.runStats.timeElapsed else -1.0f
                 val scanId = db.scanDao().lastInsertedId()
 
