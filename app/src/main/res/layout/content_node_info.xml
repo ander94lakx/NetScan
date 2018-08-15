@@ -59,16 +59,24 @@
 
     <TextView
         android:id="@+id/node_info_ip"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAlignment="textEnd"
+        android:typeface="monospace"
+        app:layout_constraintEnd_toStartOf="@+id/node_info_ip_formatted"
+        app:layout_constraintTop_toTopOf="@+id/ip_title" />
+
+    <TextView
+        android:id="@+id/node_info_ip_formatted"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
-        android:layout_marginStart="16dp"
-        android:textAlignment="viewEnd"
+        android:textAlignment="textEnd"
+        android:textColor="@color/colorAccent"
+        android:textStyle="bold"
         android:typeface="monospace"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/ip_title"
-        app:layout_constraintTop_toTopOf="@+id/ip_title" />
+        app:layout_constraintTop_toTopOf="@+id/node_info_ip" />
 
     <TextView
         android:id="@+id/mac_title"

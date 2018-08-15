@@ -43,7 +43,9 @@ class NodeInfoActivity : AppCompatActivity(), ServicesInfoFragment.OnListFragmen
         node = db.nodeDao().getNode(nodeId)
 
         node_info_name.text = node.name
-        node_info_ip.text = node.ip
+        val ipSplitted = node.ip.split(".")
+        node_info_ip.text = "${ipSplitted[0]}.${ipSplitted[1]}"
+        node_info_ip_formatted.text = ".${ipSplitted[2]}.${ipSplitted[3]}"
         node_info_mac.text = node.mac
         node_info_vendor.text = if (node.vendor == "") resources.getString(R.string.unknown) else node.vendor
         servicesInfoFragment = supportFragmentManager.findFragmentById(R.id.fragment_node_ports) as ServicesInfoFragment

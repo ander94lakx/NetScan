@@ -1,42 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="70dp"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:id="@+id/relativeLayout">
 
     <TextView
         android:id="@+id/node_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/text_margin"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
         android:text="Node Placeholder"
-        android:textAppearance="?attr/textAppearanceListItem" />
+        android:textAppearance="?attr/textAppearanceListItem"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/node_ip"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignStart="@+id/node_name"
-        android:layout_marginBottom="15dp"
-        android:text="192.168.0.1" />
+        android:text="192.168"
+        app:layout_constraintStart_toStartOf="@+id/node_name"
+        app:layout_constraintTop_toBottomOf="@+id/node_name" />
+
+    <TextView
+        android:id="@+id/node_ip_formatted"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=".0.1"
+        android:textColor="@color/colorAccent"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@+id/node_ip"
+        app:layout_constraintTop_toBottomOf="@+id/node_name" />
 
     <TextView
         android:id="@+id/node_mac"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/node_ip"
-        android:layout_alignBottom="@+id/node_ip"
-        android:layout_alignParentEnd="true"
         android:layout_marginEnd="16dp"
-        android:text="1A:2B:3C:4D:5E:6F" />
+        android:text="1A:2B:3C:4D:5E:6F"
+        app:layout_constraintBottom_toBottomOf="@+id/node_ip"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <View
+        android:id="@+id/view"
         android:layout_width="match_parent"
         android:layout_height="2dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginEnd="@dimen/text_margin"
         android:layout_marginStart="@dimen/text_margin"
-        android:background="?android:attr/listDivider" />
-</RelativeLayout>
+        android:layout_marginTop="8dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/node_ip" />
+</android.support.constraint.ConstraintLayout>
