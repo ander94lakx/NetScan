@@ -7,9 +7,6 @@ import com.andergranado.netscan.model.db.Node
 import com.andergranado.netscan.model.db.Port
 import com.andergranado.netscan.nmap.NmapRunner
 import com.andergranado.netscan.nmap.ScanType
-import java.io.BufferedReader
-import java.io.FileInputStream
-import java.io.InputStreamReader
 import java.net.InetAddress
 
 /**
@@ -19,10 +16,6 @@ import java.net.InetAddress
 abstract class SequentialNetworkScan(db: AppDatabase, wifiManager: WifiManager) : NetworkScan(db, wifiManager) {
 
     final override val pingTimeout = 300 // TODO: Make this a setting?
-
-    private val ARP_TABLE = "/proc/net/arp"
-    private val ARP_INCOMPLETE = "0x0"
-    private val ARP_INACTIVE = "00:00:00:00:00:00"
 
     override fun onPreExecute() {
         super.onPreExecute()
@@ -92,27 +85,5 @@ abstract class SequentialNetworkScan(db: AppDatabase, wifiManager: WifiManager) 
             triedHosts++
             updateUi()
         }
-    }
-
-    private fun getMacAddress(ip: String): String? {
-        val reader = BufferedReader(InputStreamReader(FileInputStream(ARP_TABLE), "UTF-8"))
-        reader.use {
-            var line = it.readLine()
-
-            while (line != null) {
-                val arpLine = line.split("\\s+".toRegex()).dropLastWhile { it.isEmpty() }
-
-                val arpIp = arpLine[0]
-                val flag = arpLine[2]
-                val macAddress = arpLine[3]
-
-                if (arpIp == ip)
-                    if (flag != ARP_INCOMPLETE && macAddress != ARP_INACTIVE)
-                        return macAddress.toUpperCase()
-
-                line = it.readLine()
-            }
-        }
-        return null
     }
 }
