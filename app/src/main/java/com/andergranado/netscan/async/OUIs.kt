@@ -20,6 +20,8 @@ object OUIs {
     private data class Vendor(val mac: String, val vendorShort: String, val vendorFull: String)
     private val vendorList: MutableList<Vendor> = mutableListOf()
 
+    private var downloaded = false
+
     private val downloadThread = Thread(Runnable {
         val url = URL(urlString)
         val urlConnection = url.openConnection()
@@ -33,19 +35,26 @@ object OUIs {
             }
         }
         bufferedReader.close()
+        downloaded = true
     })
 
     fun downloadOUIFile() {
-        downloadThread.start()
-        downloadThread.join()
+        if (!downloaded) {
+            downloadThread.start()
+            downloadThread.join()
+        }
     }
 
     fun isOuiDataDownloaded(wait: Boolean): Boolean {
-        if (wait) {
-            downloadThread.join()
-            return true
-        } else
-            return downloadThread.isAlive
+        return downloaded ||
+                if (wait) {
+                    if (!downloadThread.isAlive)
+                        downloadThread.start()
+                    downloadThread.join()
+                    downloaded = true
+                    true
+                } else
+                    downloadThread.isAlive
     }
 
     // TODO: Improve this method for all de MACS writed in CIDR mode

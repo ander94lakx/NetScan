@@ -40,6 +40,8 @@ class ScanDirectionFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private var scanType = ScanType.REGULAR
     private var listener: OnFragmentInteractionListener? = null
 
+    private lateinit var scanDirectionTask: ScanDirectionTask
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
@@ -66,6 +68,8 @@ class ScanDirectionFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 }
             } else false
         }
+
+        scanDirectionTask = ScanDirectionTask()
     }
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -98,8 +102,10 @@ class ScanDirectionFragment : Fragment(), AdapterView.OnItemSelectedListener {
         val hostStr = host_to_scan.text.toString()
         val activity = activity as Activity
         if (ipPattern.matcher(hostStr).matches() || fqdnPattern.matcher(hostStr).matches()) {
-            if (NmapRunner.isNetworkAvailable(activity))
-                ScanDirectionTask().execute(hostStr)
+            if (NmapRunner.isNetworkAvailable(activity)) {
+                if (scanDirectionTask.status == AsyncTask.Status.PENDING)
+                    scanDirectionTask.execute(hostStr)
+            }
             else {
                 AlertDialog.Builder(activity)
                         .setIcon(R.drawable.ic_warning)
