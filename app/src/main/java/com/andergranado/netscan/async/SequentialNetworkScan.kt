@@ -24,6 +24,11 @@ abstract class SequentialNetworkScan(db: AppDatabase, wifiManager: WifiManager) 
     private val ARP_INCOMPLETE = "0x0"
     private val ARP_INACTIVE = "00:00:00:00:00:00"
 
+    override fun onPreExecute() {
+        super.onPreExecute()
+        OUIs.downloadOUIFile()
+    }
+
     override fun doInBackground(vararg __nothing: Unit) {
         val nmapRunner = NmapRunner(ScanType.REGULAR)
         for (address in addresses) {
@@ -40,12 +45,23 @@ abstract class SequentialNetworkScan(db: AppDatabase, wifiManager: WifiManager) 
                         && singleHostScan.hosts[0].status.state == HostStates.UP) {
 
                     val ip = singleHostScan.hosts[0].address.address
+                    val mac: String = getMacAddress(ip) ?: ""
                     val name =
                             if (singleHostScan.hosts[0].hostNames.isNotEmpty())
                                 singleHostScan.hosts[0].hostNames[0].name
+                            else {
+                                OUIs.isOuiDataDownloaded(true)
+                                if (OUIs.checkVendorFromMac(mac) == "")
+                                    ip
+                                else
+                                    OUIs.checkVendorFromMac(mac)
+                            }
+                    val vendor: String =
+                            if (OUIs.isOuiDataDownloaded(true))
+                                OUIs.checkVendorFromMac(mac)
                             else
-                                ip
-                    val mac: String = getMacAddress(ip) ?: ""
+                                ""
+
                     val timeElapsed: Float =
                             if (singleHostScan.runStats != null)
                                 singleHostScan.runStats.timeElapsed
@@ -53,7 +69,7 @@ abstract class SequentialNetworkScan(db: AppDatabase, wifiManager: WifiManager) 
                                 -1.0f
                     val scanId = db.scanDao().lastInsertedId()
 
-                    currentNode = Node(name, ip, mac, timeElapsed, scanId)
+                    currentNode = Node(name, ip, mac, vendor, timeElapsed, scanId)
                     db.nodeDao().insertNode(currentNode as Node)
 
 

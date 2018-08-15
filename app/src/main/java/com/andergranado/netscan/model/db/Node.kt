@@ -10,6 +10,7 @@ import android.arch.persistence.room.PrimaryKey
 open class Node(val name: String,
                 val ip: String,
                 val mac: String,
+                val vendor: String,
                 val timeElapsed: Float,
                 val scanId: Int) {
 
