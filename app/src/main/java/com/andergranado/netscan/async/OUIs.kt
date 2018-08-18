@@ -13,16 +13,19 @@ import java.net.URL
  *
  * To download the file uses a simple Thread to avoid doin network operations on the main thread
  */
-object OUIs {
+object OUIs: DownloadableResource() {
 
-    val urlString: String = "https://code.wireshark.org/review/gitweb?p=wireshark.git;a=blob_plain;f=manuf"
+    override val urlString: String = "https://code.wireshark.org/review/gitweb?p=wireshark.git;a=blob_plain;f=manuf"
 
     private data class Vendor(val mac: String, val vendorShort: String, val vendorFull: String)
     private val vendorList: MutableList<Vendor> = mutableListOf()
 
-    private var downloaded = false
+    override var downloaded = false
+        get() {
+            return field || downloadThread.isAlive
+        }
 
-    private val downloadThread = Thread(Runnable {
+    override val downloadThread = Thread(Runnable {
         val url = URL(urlString)
         val urlConnection = url.openConnection()
         val bufferedReader = BufferedReader(InputStreamReader(urlConnection.getInputStream()))
@@ -38,23 +41,18 @@ object OUIs {
         downloaded = true
     })
 
-    fun downloadOUIFile() {
+    override fun downloadFile() {
         if (!downloaded) {
             downloadThread.start()
             downloadThread.join()
         }
     }
 
-    fun isOuiDataDownloaded(wait: Boolean): Boolean {
-        return downloaded ||
-                if (wait) {
-                    if (!downloadThread.isAlive)
-                        downloadThread.start()
-                    downloadThread.join()
-                    downloaded = true
-                    true
-                } else
-                    downloadThread.isAlive
+    override fun waitForDownload() {
+        if (!downloadThread.isAlive)
+            downloadThread.start()
+        downloadThread.join()
+        downloaded = true
     }
 
     // TODO: Improve this method for all de MACS writed in CIDR mode
