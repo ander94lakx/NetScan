@@ -6,8 +6,7 @@
     android:name="com.andergranado.netscan.view.fragment.ServicesInfoFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginLeft="16dp"
-    android:layout_marginRight="16dp"
+    android:padding="16dp"
     app:layoutManager="LinearLayoutManager"
     tools:context="com.andergranado.netscan.view.fragment.ServicesInfoFragment"
     tools:listitem="@layout/fragment_services_info" />

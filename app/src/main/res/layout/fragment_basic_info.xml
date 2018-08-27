@@ -41,19 +41,11 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:fontFamily="monospace"
-            android:textAlignment="textEnd"
-            android:textAppearance="@android:style/TextAppearance.Material.Medium" />
-
-        <TextView
-            android:id="@+id/ip_text_formatted"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:fontFamily="monospace"
-            android:textAlignment="textEnd"
+            android:textAlignment="viewEnd"
             android:textAppearance="@android:style/TextAppearance.Material.Medium"
             android:textColor="@color/colorAccent"
             android:textStyle="bold" />
+
     </LinearLayout>
 
     <LinearLayout

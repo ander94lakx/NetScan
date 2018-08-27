@@ -42,11 +42,6 @@ class BasicInfoFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         // View elements can only be accessed (even with Kotlin synthetic properties) after view creation
         ip_text.text = ip
-        val ipSplitted = ip?.split(".")
-        if (ipSplitted != null) {
-            ip_text.text = ipSplitted[0] + "." + ipSplitted[1]
-            ip_text_formatted.text = "." + ipSplitted[2] + "." + ipSplitted[3]
-        }
         hostname_text.text = hostname
     }
 
