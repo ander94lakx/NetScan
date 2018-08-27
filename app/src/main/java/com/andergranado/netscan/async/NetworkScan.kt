@@ -2,12 +2,17 @@ package com.andergranado.netscan.async
 
 import android.net.wifi.WifiManager
 import android.os.AsyncTask
-import com.andergranado.netscan.model.NmapScan
-import com.andergranado.netscan.model.db.*
+import com.andergranado.netscan.model.db.AppDatabase
+import com.andergranado.netscan.model.db.Node
+import com.andergranado.netscan.model.db.Scan
+import com.andergranado.netscan.model.db.ScanStats
 import com.andergranado.netscan.nmap.NmapRunner
 import org.apache.commons.net.util.SubnetUtils
+import java.io.BufferedReader
+import java.io.FileInputStream
+import java.io.InputStreamReader
 
-abstract class NetworkScan(private val db: AppDatabase, private val wifiManager: WifiManager) : AsyncTask<Unit, NmapScan, Unit>() {
+abstract class NetworkScan(protected val db: AppDatabase, private val wifiManager: WifiManager) : AsyncTask<Unit, Node, Unit>() {
 
     open val pingTimeout = 300 // TODO: Make this a setting?
 
@@ -21,6 +26,10 @@ abstract class NetworkScan(private val db: AppDatabase, private val wifiManager:
     private var scanStartTimestamp: Long? = null
     private var hostsUp = 0
 
+    private val ARP_TABLE = "/proc/net/arp"
+    private val ARP_INCOMPLETE = "0x0"
+    private val ARP_INACTIVE = "00:00:00:00:00:00"
+
     override fun onPreExecute() {
         val ip = NmapRunner.intToIp(wifiManager.connectionInfo.ipAddress)
         val netmask = NmapRunner.intToIp(wifiManager.dhcpInfo.netmask)
@@ -31,47 +40,43 @@ abstract class NetworkScan(private val db: AppDatabase, private val wifiManager:
         scanStartTimestamp = System.nanoTime()
     }
 
-    override fun onProgressUpdate(vararg values: NmapScan?) {
+    override fun onProgressUpdate(vararg values: Node?) {
         if (emptyScan) {
             db.scanDao().insertScan(Scan(scanName))
             scanId = db.scanDao().lastInsertedId()
             emptyScan = false
         }
 
-        for (scan in values) {
-            if (scan is NmapScan && scan.hosts.isNotEmpty()) {
-                val ip = scan.hosts[0].address.address
-                val name = if (scan.hosts[0].hostNames.isNotEmpty()) scan.hosts[0].hostNames[0].name else ip
-                val mac = ByteArray(6) // TODO: Implement the MAC direction obtainment method
-                val timeElapsed: Float = if (scan.runStats != null) scan.runStats.timeElapsed else -1.0f
-                val scanId = db.scanDao().lastInsertedId()
-
-                currentNode = Node(name, ip, mac, timeElapsed, scanId)
-                db.nodeDao().insertNode(currentNode as Node)
-
-
-                for (nmapPort in scan.hosts[0].ports) {
-                    val id = nmapPort.id
-                    val protocol = nmapPort.type
-                    val service = nmapPort.service
-                    val state = nmapPort.state.state
-                    val reason = nmapPort.state.reason
-                    val nodeId = db.nodeDao().lastInsertedId()
-
-                    val port = Port(id, nodeId, protocol, service, state, reason)
-                    db.portDao().insertPort(port)
-                }
-            } else {
-                currentNode = null
-            }
-
-            hostsUp++
-        }
+        for (scan in values)
+            if (scan != null)
+                hostsUp++
     }
 
     override fun onPostExecute(result: Unit?) {
         val scanTimeInSeconds = ((System.nanoTime() - scanStartTimestamp!!) / Math.pow(10.0, 9.0)).toFloat()
         db.scanStatsDao().insertScanStats(ScanStats(scanId, addresses.size, hostsUp, addresses.size - hostsUp, scanTimeInSeconds))
+    }
+
+    protected fun getMacAddress(ip: String): String? {
+        val reader = BufferedReader(InputStreamReader(FileInputStream(ARP_TABLE), "UTF-8"))
+        reader.use {
+            var line = it.readLine()
+
+            while (line != null) {
+                val arpLine = line.split("\\s+".toRegex()).dropLastWhile { it.isEmpty() }
+
+                val arpIp = arpLine[0]
+                val flag = arpLine[2]
+                val macAddress = arpLine[3]
+
+                if (arpIp == ip)
+                    if (flag != ARP_INCOMPLETE && macAddress != ARP_INACTIVE)
+                        return macAddress.toUpperCase()
+
+                line = it.readLine()
+            }
+        }
+        return null
     }
 
     /**

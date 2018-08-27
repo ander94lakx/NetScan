@@ -11,7 +11,6 @@ import android.view.KeyEvent
 import android.view.View
 import com.andergranado.netscan.R
 import com.andergranado.netscan.async.SequentialNetworkScan
-import com.andergranado.netscan.model.NmapScan
 import com.andergranado.netscan.model.db.AppDatabase
 import com.andergranado.netscan.model.db.Node
 import com.andergranado.netscan.view.fragment.NodeListFragment
@@ -97,7 +96,7 @@ class NetworkScanActivity : AppCompatActivity(),
             setTitle(R.string.scanning)
         }
 
-        override fun onProgressUpdate(vararg values: NmapScan?) {
+        override fun onProgressUpdate(vararg values: Node?) {
             super.onProgressUpdate(*values)
 
             if (currentNode is Node)

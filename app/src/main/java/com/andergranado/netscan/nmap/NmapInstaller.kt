@@ -42,7 +42,8 @@ object NmapInstaller {
                         val myDir = File("$nmapPath/${entry.name}")
 
                         if (!myDir.isDirectory)
-                            myDir.mkdirs()
+                            if (!myDir.mkdirs())
+                                throw IOException("Cannot create the directory")
 
                     } else {
                         val buffer = ByteArray(2048)

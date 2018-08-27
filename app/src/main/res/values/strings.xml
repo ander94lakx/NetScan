@@ -50,6 +50,8 @@
     <string name="hosts_down">Hosts Down</string>
     <string name="total_time">Total Time</string>
 
+    <string name="unknown">Unknown</string>
+
     <!-- If the order changes the ScanType enum needs to be changed -->
     <string-array name="scan_type">
         <item>Regular</item>

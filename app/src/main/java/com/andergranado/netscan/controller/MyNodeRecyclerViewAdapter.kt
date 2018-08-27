@@ -26,8 +26,10 @@ class MyNodeRecyclerViewAdapter(private val values: MutableList<Node>,
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.item = values[position]
         holder.nodeNameView.text = values[position].name
-        holder.nodeIpView.text = values[position].ip
-        holder.nodeMacView.text = values[position].getMacString()
+        val ipSplitted = values[position].ip.split(".")
+        holder.nodeIpView.text =  ipSplitted[0] + "." + ipSplitted[1]
+        holder.nodeIpFormattedView.text = "." + ipSplitted[2] + "." + ipSplitted[3]
+        holder.nodeMacView.text = values[position].mac
 
         holder.view.setOnClickListener {
             listener?.onListFragmentInteraction(holder.item as Node)
@@ -46,6 +48,7 @@ class MyNodeRecyclerViewAdapter(private val values: MutableList<Node>,
     inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         val nodeNameView: TextView = view.findViewById<View>(R.id.node_name) as TextView
         val nodeIpView: TextView = view.findViewById<View>(R.id.node_ip) as TextView
+        val nodeIpFormattedView: TextView = view.findViewById<View>(R.id.node_ip_formatted) as TextView
         val nodeMacView: TextView = view.findViewById<View>(R.id.node_mac) as TextView
         var item: Node? = null
     }

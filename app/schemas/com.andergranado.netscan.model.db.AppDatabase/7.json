@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 5,
-    "identityHash": "0bd465ed030afa558b1460101a745aa2",
+    "version": 7,
+    "identityHash": "b940e54e8f5a2571bebc8c5124a62439",
     "entities": [
       {
         "tableName": "Scan",
@@ -38,7 +38,7 @@
       },
       {
         "tableName": "Node",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `ip` TEXT NOT NULL, `mac` TEXT NOT NULL, `timeElapsed` REAL NOT NULL, `scanId` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `ip` TEXT NOT NULL, `mac` TEXT NOT NULL, `vendor` TEXT NOT NULL, `timeElapsed` REAL NOT NULL, `scanId` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -61,6 +61,12 @@
           {
             "fieldPath": "mac",
             "columnName": "mac",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "vendor",
+            "columnName": "vendor",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -196,7 +202,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"0bd465ed030afa558b1460101a745aa2\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"b940e54e8f5a2571bebc8c5124a62439\")"
     ]
   }
 }

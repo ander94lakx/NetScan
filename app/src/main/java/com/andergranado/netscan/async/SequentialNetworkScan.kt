@@ -1,13 +1,12 @@
 package com.andergranado.netscan.async
 
 import android.net.wifi.WifiManager
-import android.os.AsyncTask
 import com.andergranado.netscan.model.HostStates
-import com.andergranado.netscan.model.NmapScan
-import com.andergranado.netscan.model.db.*
+import com.andergranado.netscan.model.db.AppDatabase
+import com.andergranado.netscan.model.db.Node
+import com.andergranado.netscan.model.db.Port
 import com.andergranado.netscan.nmap.NmapRunner
 import com.andergranado.netscan.nmap.ScanType
-import org.apache.commons.net.util.SubnetUtils
 import java.net.InetAddress
 
 /**
@@ -17,6 +16,11 @@ import java.net.InetAddress
 abstract class SequentialNetworkScan(db: AppDatabase, wifiManager: WifiManager) : NetworkScan(db, wifiManager) {
 
     final override val pingTimeout = 300 // TODO: Make this a setting?
+
+    override fun onPreExecute() {
+        super.onPreExecute()
+        OUIs.downloadOUIFile()
+    }
 
     override fun doInBackground(vararg __nothing: Unit) {
         val nmapRunner = NmapRunner(ScanType.REGULAR)
@@ -31,8 +35,52 @@ abstract class SequentialNetworkScan(db: AppDatabase, wifiManager: WifiManager) 
 
                 if (singleHostScan != null
                         && singleHostScan.hosts.isNotEmpty()
-                        && singleHostScan.hosts[0].status.state == HostStates.UP)
-                    publishProgress(singleHostScan)
+                        && singleHostScan.hosts[0].status.state == HostStates.UP) {
+
+                    val ip = singleHostScan.hosts[0].address.address
+                    val mac: String = getMacAddress(ip) ?: ""
+                    val name =
+                            if (singleHostScan.hosts[0].hostNames.isNotEmpty())
+                                singleHostScan.hosts[0].hostNames[0].name
+                            else {
+                                OUIs.isOuiDataDownloaded(true)
+                                if (OUIs.checkVendorFromMac(mac) == "")
+                                    ip
+                                else
+                                    OUIs.checkVendorFromMac(mac)
+                            }
+                    val vendor: String =
+                            if (OUIs.isOuiDataDownloaded(true))
+                                OUIs.checkVendorFromMac(mac)
+                            else
+                                ""
+
+                    val timeElapsed: Float =
+                            if (singleHostScan.runStats != null)
+                                singleHostScan.runStats.timeElapsed
+                            else
+                                -1.0f
+                    val scanId = db.scanDao().lastInsertedId()
+
+                    currentNode = Node(name, ip, mac, vendor, timeElapsed, scanId)
+                    db.nodeDao().insertNode(currentNode as Node)
+
+
+                    for (nmapPort in singleHostScan.hosts[0].ports) {
+                        val port = Port(nmapPort.id,
+                                db.nodeDao().lastInsertedId(),
+                                nmapPort.type,
+                                nmapPort.service,
+                                nmapPort.state.state,
+                                nmapPort.state.reason)
+                        db.portDao().insertPort(port)
+                    }
+
+                    publishProgress(currentNode)
+
+                } else {
+                    currentNode = null
+                }
             }
             triedHosts++
             updateUi()
