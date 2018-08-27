@@ -19,7 +19,7 @@ abstract class SequentialNetworkScan(db: AppDatabase, wifiManager: WifiManager) 
 
     override fun onPreExecute() {
         super.onPreExecute()
-        OUIs.downloadOUIFile()
+        OUIs.downloadFile()
     }
 
     override fun doInBackground(vararg __nothing: Unit) {
@@ -43,14 +43,16 @@ abstract class SequentialNetworkScan(db: AppDatabase, wifiManager: WifiManager) 
                             if (singleHostScan.hosts[0].hostNames.isNotEmpty())
                                 singleHostScan.hosts[0].hostNames[0].name
                             else {
-                                OUIs.isOuiDataDownloaded(true)
+                                if(!OUIs.downloaded)
+                                    OUIs.waitForDownload()
+
                                 if (OUIs.checkVendorFromMac(mac) == "")
                                     ip
                                 else
                                     OUIs.checkVendorFromMac(mac)
                             }
                     val vendor: String =
-                            if (OUIs.isOuiDataDownloaded(true))
+                            if (!OUIs.downloaded)
                                 OUIs.checkVendorFromMac(mac)
                             else
                                 ""
@@ -64,7 +66,6 @@ abstract class SequentialNetworkScan(db: AppDatabase, wifiManager: WifiManager) 
 
                     currentNode = Node(name, ip, mac, vendor, timeElapsed, scanId)
                     db.nodeDao().insertNode(currentNode as Node)
-
 
                     for (nmapPort in singleHostScan.hosts[0].ports) {
                         val port = Port(nmapPort.id,

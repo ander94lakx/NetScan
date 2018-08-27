@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.wifi.SupplicantState
 import android.net.wifi.WifiManager
+import android.os.AsyncTask
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
@@ -28,6 +29,7 @@ class NetworkScanActivity : AppCompatActivity(),
 
     private lateinit var db: AppDatabase
     private lateinit var wifiManager: WifiManager
+    private lateinit var networkScanTask: NetworkScan
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,6 +41,8 @@ class NetworkScanActivity : AppCompatActivity(),
 
         wifiManager = applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
 
+        networkScanTask = NetworkScan()
+
         supportFragmentManager.beginTransaction().add(R.id.activity_network_scan, nodeListFragment).commit()
     }
 
@@ -47,7 +51,8 @@ class NetworkScanActivity : AppCompatActivity(),
 
         if (wifiManager.wifiState == WifiManager.WIFI_STATE_ENABLED
                 && wifiManager.connectionInfo.supplicantState == SupplicantState.COMPLETED) {
-            NetworkScan().execute()
+            if (networkScanTask.status == AsyncTask.Status.PENDING)
+                networkScanTask.execute()
         } else {
             AlertDialog.Builder(this)
                     .setIcon(R.drawable.ic_warning)
