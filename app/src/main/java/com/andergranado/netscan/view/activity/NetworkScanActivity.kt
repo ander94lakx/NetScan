@@ -43,7 +43,7 @@ class NetworkScanActivity : AppCompatActivity(),
 
         networkScanTask = NetworkScan()
 
-        supportFragmentManager.beginTransaction().add(R.id.activity_network_scan, nodeListFragment).commit()
+        supportFragmentManager.beginTransaction().replace(R.id.empty_layout, nodeListFragment).commit()
     }
 
     override fun onResume() {
@@ -111,7 +111,7 @@ class NetworkScanActivity : AppCompatActivity(),
         override fun onPostExecute(result: Unit?) {
             super.onPostExecute(result)
 
-            network_scan_progress_bar.visibility = View.GONE
+            network_scan_progress_bar.visibility = View.INVISIBLE
             setTitle(R.string.scanned)
             ended = true
         }

@@ -49,11 +49,13 @@
     <View
         android:id="@+id/view"
         android:layout_width="match_parent"
-        android:layout_height="2dp"
+        android:layout_height="@dimen/separator_size"
+        android:layout_marginEnd="@dimen/text_margin"
         android:layout_marginStart="@dimen/text_margin"
         android:layout_marginTop="8dp"
         android:background="?android:attr/listDivider"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/node_ip" />
 </android.support.constraint.ConstraintLayout>
