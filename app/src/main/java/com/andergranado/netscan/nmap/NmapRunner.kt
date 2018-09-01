@@ -8,7 +8,7 @@ import java.io.BufferedReader
 import java.io.DataOutputStream
 import java.io.File
 import java.io.InputStreamReader
-import java.util.Date
+import java.util.*
 
 /**
  * A class for running Nmap commands on the device.
@@ -84,8 +84,9 @@ class NmapRunner(private val scanType: ScanType = ScanType.REGULAR) {
         hosts.forEach { hostsString += "$it " }
         val args = when (scanType) {
             ScanType.REGULAR -> ""
-            ScanType.PING -> "-sn"
+            ScanType.ONLY_PING -> "-sn"
             ScanType.QUICK -> "-T4"
+            ScanType.NO_PING -> "-Pn"
             ScanType.FULL -> "-A --no-stylesheet"
         }
         return "${NmapInstaller.nmapBinPath} $args $hostsString -oX ${outputFile.path}\n"

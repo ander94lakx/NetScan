@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="options">Opciones</string>
-    <string name="scan">Scan</string>
     <string name="only_ping">Only Ping scan</string>
-    <string name="get_host_extra_info">Get additional info</string>
+    <string name="get_host_extra_info">Obtener información adicional</string>
+    <string name="pref_ping_timeout_title" />
 </resources>

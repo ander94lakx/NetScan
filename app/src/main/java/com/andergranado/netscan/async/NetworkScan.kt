@@ -1,20 +1,27 @@
 package com.andergranado.netscan.async
 
+import android.content.Context
 import android.net.wifi.WifiManager
 import android.os.AsyncTask
+import android.preference.PreferenceManager
 import com.andergranado.netscan.model.db.AppDatabase
 import com.andergranado.netscan.model.db.Node
 import com.andergranado.netscan.model.db.Scan
 import com.andergranado.netscan.model.db.ScanStats
 import com.andergranado.netscan.nmap.NmapRunner
+import com.andergranado.netscan.nmap.ScanType
 import org.apache.commons.net.util.SubnetUtils
 import java.io.BufferedReader
 import java.io.FileInputStream
 import java.io.InputStreamReader
 
-abstract class NetworkScan(protected val db: AppDatabase, private val wifiManager: WifiManager) : AsyncTask<Unit, Node, Unit>() {
+abstract class NetworkScan(protected val context: Context,
+                           protected val db: AppDatabase,
+                           private val wifiManager: WifiManager) : AsyncTask<Unit, Node, Unit>() {
 
-    open val pingTimeout = 300 // TODO: Make this a setting?
+    protected var pingTimeout = 300
+    protected var avoidPing: Boolean = false
+    protected var scanType = ScanType.REGULAR
 
     protected var addresses: Array<String> = arrayOf()
     protected var currentNode: Node? = null
@@ -33,6 +40,16 @@ abstract class NetworkScan(protected val db: AppDatabase, private val wifiManage
     override fun onPreExecute() {
         val ip = NmapRunner.intToIp(wifiManager.connectionInfo.ipAddress)
         val netmask = NmapRunner.intToIp(wifiManager.dhcpInfo.netmask)
+
+        val preferences = PreferenceManager.getDefaultSharedPreferences(context)
+        avoidPing = preferences.getBoolean("avoid_ping", false)
+        pingTimeout = preferences.getString("ping_timeout", "300").toInt()
+        scanType = when (preferences.getString("scan_type", "r")) {
+            "q" -> ScanType.QUICK
+            "r" -> ScanType.REGULAR
+            "f" -> ScanType.FULL
+            else -> ScanType.REGULAR
+        }
 
         scanName = wifiManager.connectionInfo.ssid.trim('"')
         addresses = SubnetUtils(ip, netmask).info.allAddresses

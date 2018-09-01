@@ -90,7 +90,7 @@ class NetworkScanActivity : AppCompatActivity(),
         }
     }
 
-    inner class NetworkScan : SequentialNetworkScan(db, wifiManager) {
+    inner class NetworkScan : SequentialNetworkScan(applicationContext, db, wifiManager) {
 
         override fun onPreExecute() {
             super.onPreExecute()
