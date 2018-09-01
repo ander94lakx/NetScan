@@ -56,6 +56,8 @@ class ScanDirectionFragment : Fragment(), AdapterView.OnItemSelectedListener {
         // Apply the adapter to the spinner
         scan_type_spinner.adapter = adapter
         scan_type_spinner.onItemSelectedListener = this
+        progress_bar.visibility = View.GONE
+        button_scan_host.visibility = View.VISIBLE
 
         host_to_scan.setOnKeyListener { v: View, keyCode: Int, event: KeyEvent ->
             if (event.action == KeyEvent.ACTION_DOWN) {
@@ -139,6 +141,7 @@ class ScanDirectionFragment : Fragment(), AdapterView.OnItemSelectedListener {
             host_to_scan.isEnabled = false
             scan_type_spinner.isEnabled = false
             progress_bar.visibility = View.VISIBLE
+            button_scan_host.visibility = View.GONE
             val currentActivity = activity
             if (currentActivity is MainActivity)
                 currentActivity.hideScanFab()

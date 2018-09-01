@@ -1,11 +1,13 @@
 package com.andergranado.netscan.view.activity
 
+import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.TabLayout
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import com.andergranado.netscan.R
 import com.andergranado.netscan.model.NmapScan
@@ -44,6 +46,7 @@ class DirectionScanActivity : AppCompatActivity(),
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_direction_scan)
         setSupportActionBar(toolbar)
+        window.statusBarColor = ContextCompat.getColor(this, R.color.colorPrimaryDark) // Workaround to set the correct color to the status bar
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         val scan = intent.extras.get("scan") as NmapScan

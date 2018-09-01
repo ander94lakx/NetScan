@@ -14,7 +14,7 @@
             android:title="@string/scan_direction" />
     </group>
 
-    <item android:title="Other">
+    <item android:title="@string/other">
         <menu>
             <item
                 android:id="@+id/nav_share"
