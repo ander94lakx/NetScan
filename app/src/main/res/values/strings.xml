@@ -10,6 +10,7 @@
 
     <string name="my_scans">My Scans</string>
     <string name="scan_direction">Scan Direction</string>
+    <string name="other">Other</string>
     <string name="share">Share</string>
     <string name="about">About</string>
     <string name="title_activity_settings">Settings</string>
